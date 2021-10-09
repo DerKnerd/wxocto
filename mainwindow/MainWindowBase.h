@@ -20,6 +20,9 @@
 #include <wx/treelist.h>
 #include <wx/dataview.h>
 
+#include <utility>
+#include "../octoprint/OctoprintFile.h"
+
 enum MainWindowActions {
     StartPrint = 200,
     ResumePrint,
@@ -29,6 +32,27 @@ enum MainWindowActions {
     EditSpool,
     DeleteSpool,
     PrinterSettings,
+};
+
+enum FileListColumns {
+    ColName = 0,
+    ColSize = 1,
+    ColUploaded = 2,
+    ColModelSize = 3,
+    ColFilamentUse = 4,
+    ColEstimatedPrintTime = 5
+};
+
+class OctoprintFileClientData : public wxClientData {
+public:
+    explicit OctoprintFileClientData(OctoprintFile file) : file(std::move(file)) {}
+
+    OctoprintFile file;
+};
+
+class OctoprintFileTreeListItemComparator : public wxTreeListItemComparator {
+public:
+    int Compare(wxTreeListCtrl *treelist, unsigned int column, wxTreeListItem first, wxTreeListItem second) override;
 };
 
 class MainWindowBase : public wxFrame {

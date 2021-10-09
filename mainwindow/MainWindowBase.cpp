@@ -153,11 +153,12 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     tlcFiles->AppendColumn(_("Name"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
     tlcFiles->AppendColumn(_("Size"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
     tlcFiles->AppendColumn(_("Uploaded"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
-    tlcFiles->AppendColumn(_("Model size"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
+    tlcFiles->AppendColumn(_("Model size"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_REORDERABLE);
     tlcFiles->AppendColumn(_("Filament use"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
     tlcFiles->AppendColumn(_("Estimated print time"), -2, wxALIGN_LEFT,
                            wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
     tlcFiles->SetMinSize(wxSize(-1, -1));
+    tlcFiles->SetItemComparator(new OctoprintFileTreeListItemComparator());
 
     nbpSpools = new wxPanel(nbContent, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(nbContent, wxSize(-1, -1)),
                             wxTAB_TRAVERSAL);
@@ -303,4 +304,25 @@ void MainWindowBase::handleCancelPrint() {
     toolbar->EnableTool(MainWindowActions::StartPrint, true);
     toolbar->EnableTool(MainWindowActions::PausePrint, false);
     toolbar->EnableTool(MainWindowActions::ResumePrint, false);
+}
+
+int OctoprintFileTreeListItemComparator::Compare(wxTreeListCtrl *treelist, unsigned int column, wxTreeListItem first,
+                                                 wxTreeListItem second) {
+    auto firstItem = dynamic_cast<OctoprintFileClientData *>(treelist->GetItemData(first));
+    auto secondItem = dynamic_cast<OctoprintFileClientData *>(treelist->GetItemData(second));
+
+    switch (column) {
+        case FileListColumns::ColName:
+            return firstItem->file.name.compare(secondItem->file.name);
+        case FileListColumns::ColSize:
+            return (int) (firstItem->file.size - secondItem->file.size);
+        case FileListColumns::ColUploaded:
+            return (int) (firstItem->file.uploaded - secondItem->file.uploaded);
+        case FileListColumns::ColFilamentUse:
+            return (int) (firstItem->file.filamentLength - secondItem->file.filamentLength);
+        case FileListColumns::ColEstimatedPrintTime:
+            return (int) (firstItem->file.estimatedPrintTime - secondItem->file.estimatedPrintTime);
+        default:
+            return 0;
+    }
 }
