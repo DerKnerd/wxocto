@@ -9,7 +9,7 @@
 #include "OctoprintJob.h"
 
 std::string OctoprintJob::getTimeElapsed() const {
-    if (timeElapsed == 0) {
+    if (state != Printing && state != Paused && state != Pausing) {
         return _("No print started").ToStdString();
     }
 
@@ -24,10 +24,8 @@ std::string OctoprintJob::getTimeElapsed() const {
 }
 
 std::string OctoprintJob::getTimeLeft() const {
-    if (timeLeft == 0 && file.empty()) {
+    if (timeLeft == 0) {
         return _("No print started").ToStdString();
-    } else if (timeLeft == 0) {
-        return _("Print finished").ToStdString();
     }
 
     auto ss = std::stringstream();
@@ -41,10 +39,8 @@ std::string OctoprintJob::getTimeLeft() const {
 }
 
 std::string OctoprintJob::getFinishTime() const {
-    if (timeLeft == 0 && file.empty()) {
+    if (timeLeft == 0) {
         return _("No print started").ToStdString();
-    } else if (timeLeft == 0) {
-        return _("Print finished").ToStdString();
     }
 
     auto seconds = timeLeft % 60;
@@ -61,13 +57,34 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
     auto job = OctoprintJob();
     if (json.contains("job")) {
         auto jsonJob = json["job"];
-        if (jsonJob["file"]["name"].is_null()) {
+        if (jsonJob["file"].is_null()) {
             job.file = _("No print started");
+            job.fileSelected = false;
+            job.path = "";
+            job.origin = "";
         } else {
-            job.file = jsonJob["file"]["name"];
+            auto jsonFile = jsonJob["file"];
+            if (jsonFile["name"].is_null()) {
+                job.file = _("No file selected");
+                job.fileSelected = false;
+            } else {
+                job.file = jsonFile["name"];
+                job.fileSelected = true;
+            }
+            if (jsonFile["path"].is_null()) {
+                job.path = "";
+            } else {
+                job.path = jsonFile["path"];
+            }
+            if (jsonFile["origin"].is_null()) {
+                job.origin = "";
+            } else {
+                job.origin = jsonFile["origin"];
+            }
         }
     } else {
         job.file = _("No print started");
+        job.fileSelected = false;
     }
 
     if (json.contains("progress")) {
@@ -91,6 +108,21 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
         job.timeLeft = 0;
         job.timeElapsed = 0;
         job.printProgress = 0;
+    }
+
+    auto state = json["state"].get<std::string>();
+    if (state == "Operational") {
+        job.state = OctoprintJobState::Operational;
+    } else if (state == "Printing") {
+        job.state = OctoprintJobState::Printing;
+    } else if (state == "Pausing") {
+        job.state = OctoprintJobState::Pausing;
+    } else if (state == "Paused") {
+        job.state = OctoprintJobState::Paused;
+    } else if (state == "Cancelling") {
+        job.state = OctoprintJobState::Cancelling;
+    } else if (state == "Offline") {
+        job.state = OctoprintJobState::Offline;
     }
 
     return job;

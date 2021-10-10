@@ -18,6 +18,7 @@ public:
 
 public:
     std::string name;
+    std::string path;
     long size = 0L;
     long uploaded = 0L;
     double depth = 0.0;
@@ -27,6 +28,7 @@ public:
     double estimatedPrintTime = 0.0;
     std::vector<OctoprintFile> children;
     FileType type;
+    std::string origin;
 
     [[nodiscard]] std::string getDimensions() const;
 

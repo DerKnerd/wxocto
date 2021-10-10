@@ -157,6 +157,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     tlcFiles->AppendColumn(_("Filament use"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
     tlcFiles->AppendColumn(_("Estimated print time"), -2, wxALIGN_LEFT,
                            wxCOL_RESIZABLE | wxCOL_SORTABLE | wxCOL_REORDERABLE);
+    tlcFiles->AppendColumn(_("Full path"), -2, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_REORDERABLE);
     tlcFiles->SetMinSize(wxSize(-1, -1));
     tlcFiles->SetItemComparator(new OctoprintFileTreeListItemComparator());
 
@@ -234,39 +235,6 @@ MainWindowBase::~MainWindowBase() = default;
 void MainWindowBase::handleExit(wxCommandEvent &event) {
     MainApp::getInstance()->DismissPreferencesEditor();
     Close(true);
-}
-
-void MainWindowBase::handleStartPrint(wxCommandEvent &event) {
-    toolbar->EnableTool(MainWindowActions::CancelPrint, true);
-    toolbar->EnableTool(MainWindowActions::StartPrint, false);
-    toolbar->EnableTool(MainWindowActions::PausePrint, true);
-    toolbar->EnableTool(MainWindowActions::ResumePrint, false);
-
-    printingMenu->Enable(MainWindowActions::CancelPrint, true);
-    toolbar->EnableTool(MainWindowActions::StartPrint, false);
-    toolbar->EnableTool(MainWindowActions::PausePrint, true);
-    toolbar->EnableTool(MainWindowActions::ResumePrint, false);
-}
-
-void MainWindowBase::handleResumePrint(wxCommandEvent &event) {
-    toolbar->EnableTool(MainWindowActions::CancelPrint, true);
-    toolbar->EnableTool(MainWindowActions::StartPrint, false);
-    toolbar->EnableTool(MainWindowActions::PausePrint, true);
-    toolbar->EnableTool(MainWindowActions::ResumePrint, false);
-}
-
-void MainWindowBase::handlePausePrint(wxCommandEvent &event) {
-    toolbar->EnableTool(MainWindowActions::CancelPrint, true);
-    toolbar->EnableTool(MainWindowActions::StartPrint, false);
-    toolbar->EnableTool(MainWindowActions::PausePrint, false);
-    toolbar->EnableTool(MainWindowActions::ResumePrint, true);
-}
-
-void MainWindowBase::handleCancelPrint(wxCommandEvent &event) {
-    toolbar->EnableTool(MainWindowActions::CancelPrint, false);
-    toolbar->EnableTool(MainWindowActions::StartPrint, true);
-    toolbar->EnableTool(MainWindowActions::PausePrint, false);
-    toolbar->EnableTool(MainWindowActions::ResumePrint, false);
 }
 
 int OctoprintFileTreeListItemComparator::Compare(wxTreeListCtrl *treelist, unsigned int column, wxTreeListItem first,

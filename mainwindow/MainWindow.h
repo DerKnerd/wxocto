@@ -8,6 +8,7 @@
 #include "MainWindowBase.h"
 #include "../octoprint/FetchFilesThread.h"
 #include "../octoprint/FetchPrintStatusThread.h"
+#include "../octoprint/OctoprintJob.h"
 #include <wx/app.h>
 
 class MainWindow : public MainWindowBase {
@@ -18,6 +19,7 @@ protected:
 private:
     wxTimer *pollOctoTimer;
     FetchPrintStatusThread *statusThread = nullptr;
+    OctoprintJob currentJob;
 
     void handleShow(wxShowEvent &event);
 
@@ -25,7 +27,10 @@ private:
 
     void fillFileTree(wxTreeListItem parent, const std::vector<OctoprintFile> &files);
 
+public:
+    void handleStartPrint(wxCommandEvent &event) override;
 
+private:
     void handleFilesFetched(wxThreadEvent &event);
 
     void handleFilesFetchedError(wxThreadEvent &event);
@@ -36,7 +41,19 @@ private:
 
     void handleTimer(wxTimerEvent &event);
 
+    void handlePrintStartError(wxThreadEvent &event);
+
+    void handleCancelPrintDialogClosed(wxWindowModalDialogEvent &event);
+
+    void handlePausePrintDialogClosed(wxWindowModalDialogEvent &event);
+
 public:
+    void handleResumePrint(wxCommandEvent &event) override;
+
+    void handlePausePrint(wxCommandEvent &event) override;
+
+    void handleCancelPrint(wxCommandEvent &event) override;
+
     void handlePrinterSettings(wxCommandEvent &event) override;
 
     void handleAddSpool(wxCommandEvent &event) override;

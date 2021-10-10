@@ -8,6 +8,17 @@
 #include <chrono>
 #include <string>
 #include <nlohmann/json.hpp>
+#include "OctoprintFile.h"
+
+enum OctoprintJobState {
+    Operational,
+    Printing,
+    Pausing,
+    Paused,
+    Cancelling,
+    Error,
+    Offline
+};
 
 class OctoprintJob {
 public:
@@ -15,6 +26,10 @@ public:
     time_t timeElapsed;
     time_t timeLeft;
     std::string file;
+    OctoprintJobState state;
+    std::string path;
+    std::string origin;
+    bool fileSelected;
 
     [[nodiscard]]std::string getTimeElapsed() const;
 

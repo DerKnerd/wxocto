@@ -40,7 +40,8 @@ enum FileListColumns {
     ColUploaded = 2,
     ColModelSize = 3,
     ColFilamentUse = 4,
-    ColEstimatedPrintTime = 5
+    ColEstimatedPrintTime = 5,
+    ColFullPath = 6
 };
 
 class OctoprintFileClientData : public wxClientData {
@@ -113,13 +114,13 @@ public:
 
     virtual void handleDeleteSpool(wxCommandEvent &event) = 0;
 
-    virtual void handleStartPrint(wxCommandEvent &event);
+    virtual void handleStartPrint(wxCommandEvent &event) = 0;
 
-    virtual void handleResumePrint(wxCommandEvent &event);
+    virtual void handleResumePrint(wxCommandEvent &event) = 0;
 
-    virtual void handlePausePrint(wxCommandEvent &event);
+    virtual void handlePausePrint(wxCommandEvent &event) = 0;
 
-    virtual void handleCancelPrint(wxCommandEvent &event);
+    virtual void handleCancelPrint(wxCommandEvent &event) = 0;
 };
 
 

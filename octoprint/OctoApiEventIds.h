@@ -10,6 +10,14 @@ enum OctoApiEventId {
     OctoFilesError,
     OctoJobFetched,
     OctoJobError,
+    OctoPrintStarted,
+    OctoPrintStartError,
+    OctoPrintCancelled,
+    OctoPrintCancelError,
+    OctoPrintPaused,
+    OctoPrintPauseError,
+    OctoPrintResumed,
+    OctoPrintResumeError
 };
 
 #endif //WXOCTO_OCTOAPIEVENTIDS_H
