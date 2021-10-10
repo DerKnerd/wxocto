@@ -129,7 +129,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     printStatusContentSizer->Add(fileLabel, 0, wxALL, WXC_FROM_DIP(5));
 
     lblFile = new wxStaticText(this, wxID_ANY, _("No print started"), wxDefaultPosition,
-                               wxDLG_UNIT(this, wxSize(-1, -1)), 0);
+                               wxDLG_UNIT(this, wxSize(100, -1)), wxST_ELLIPSIZE_END | wxST_NO_AUTORESIZE);
 
     printStatusContentSizer->Add(lblFile, 0, wxALL, WXC_FROM_DIP(5));
 
@@ -218,62 +218,25 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     setupEvents();
 
     // Default event handler
-    fileMenu->Connect(wxEVT_MENU, wxCommandEventHandler(MainWindowBase::handleMenuOrToolbarClicked), nullptr, this);
-    printingMenu->Connect(wxEVT_MENU, wxCommandEventHandler(MainWindowBase::handleMenuOrToolbarClicked), nullptr, this);
-    spoolsMenu->Connect(wxEVT_MENU, wxCommandEventHandler(MainWindowBase::handleMenuOrToolbarClicked), nullptr, this);
-    toolbar->Connect(wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainWindowBase::handleMenuOrToolbarClicked),
-                     nullptr,
-                     this);
+    Bind(wxEVT_MENU, &MainWindowBase::handlePrinterSettings, this, PrinterSettings);
+    Bind(wxEVT_MENU, &MainWindowBase::handleStartPrint, this, StartPrint);
+    Bind(wxEVT_MENU, &MainWindowBase::handleResumePrint, this, ResumePrint);
+    Bind(wxEVT_MENU, &MainWindowBase::handlePausePrint, this, PausePrint);
+    Bind(wxEVT_MENU, &MainWindowBase::handleCancelPrint, this, CancelPrint);
+    Bind(wxEVT_MENU, &MainWindowBase::handleAddSpool, this, AddSpool);
+    Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
+    Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
+    Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
 }
 
 MainWindowBase::~MainWindowBase() = default;
 
-void MainWindowBase::handleMenuOrToolbarClicked(wxCommandEvent &event) {
-    switch (event.GetId()) {
-        case PrinterSettings:
-            handlePrinterSettings();
-            break;
-        case AddSpool:
-            handleAddSpool();
-            break;
-        case EditSpool:
-            handleEditSpool();
-            break;
-        case DeleteSpool:
-            handleDeleteSpool();
-            break;
-        case StartPrint:
-            handleStartPrint();
-            break;
-        case ResumePrint:
-            handleResumePrint();
-            break;
-        case PausePrint:
-            handlePausePrint();
-            break;
-        case CancelPrint:
-            handleCancelPrint();
-            break;
-        case wxID_EXIT:
-            handleExit();
-            break;
-    }
-}
-
-void MainWindowBase::handleExit() {
+void MainWindowBase::handleExit(wxCommandEvent &event) {
     MainApp::getInstance()->DismissPreferencesEditor();
     Close(true);
 }
 
-void MainWindowBase::handlePrinterSettings() {}
-
-void MainWindowBase::handleAddSpool() {}
-
-void MainWindowBase::handleEditSpool() {}
-
-void MainWindowBase::handleDeleteSpool() {}
-
-void MainWindowBase::handleStartPrint() {
+void MainWindowBase::handleStartPrint(wxCommandEvent &event) {
     toolbar->EnableTool(MainWindowActions::CancelPrint, true);
     toolbar->EnableTool(MainWindowActions::StartPrint, false);
     toolbar->EnableTool(MainWindowActions::PausePrint, true);
@@ -285,21 +248,21 @@ void MainWindowBase::handleStartPrint() {
     toolbar->EnableTool(MainWindowActions::ResumePrint, false);
 }
 
-void MainWindowBase::handleResumePrint() {
+void MainWindowBase::handleResumePrint(wxCommandEvent &event) {
     toolbar->EnableTool(MainWindowActions::CancelPrint, true);
     toolbar->EnableTool(MainWindowActions::StartPrint, false);
     toolbar->EnableTool(MainWindowActions::PausePrint, true);
     toolbar->EnableTool(MainWindowActions::ResumePrint, false);
 }
 
-void MainWindowBase::handlePausePrint() {
+void MainWindowBase::handlePausePrint(wxCommandEvent &event) {
     toolbar->EnableTool(MainWindowActions::CancelPrint, true);
     toolbar->EnableTool(MainWindowActions::StartPrint, false);
     toolbar->EnableTool(MainWindowActions::PausePrint, false);
     toolbar->EnableTool(MainWindowActions::ResumePrint, true);
 }
 
-void MainWindowBase::handleCancelPrint() {
+void MainWindowBase::handleCancelPrint(wxCommandEvent &event) {
     toolbar->EnableTool(MainWindowActions::CancelPrint, false);
     toolbar->EnableTool(MainWindowActions::StartPrint, true);
     toolbar->EnableTool(MainWindowActions::PausePrint, false);

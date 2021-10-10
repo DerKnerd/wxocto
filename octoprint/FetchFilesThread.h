@@ -18,11 +18,6 @@ private:
 public:
     explicit FetchFilesThread(wxWindow *parent);
 
-    enum {
-        OctoFilesFetched = 200,
-        OctoFilesError,
-    };
-
 protected:
     void *Entry() override;
 };

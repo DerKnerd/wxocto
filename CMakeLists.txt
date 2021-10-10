@@ -41,5 +41,5 @@ find_package(websocketpp)
 find_package(easyhttpcppeasyhttp)
 find_package(nlohmann_json)
 
-add_executable(wxocto main.cpp mainwindow/MainWindowBase.cpp mainwindow/MainWindowBase.h mainwindow/MainWindow.cpp mainwindow/MainWindow.h MainApp.cpp MainApp.h settings/wxOctoSettings.h settings/OctoPrintServerSettingsPage.cpp settings/OctoPrintServerSettingsPage.h settings/OctoPrintServerSettingsPagePanel.cpp settings/OctoPrintServerSettingsPagePanel.h helper.h octoprint/OctoprintFile.cpp octoprint/OctoprintFile.h octoprint/FetchFilesThread.cpp octoprint/FetchFilesThread.h)
+add_executable(wxocto main.cpp mainwindow/MainWindowBase.cpp mainwindow/MainWindowBase.h mainwindow/MainWindow.cpp mainwindow/MainWindow.h MainApp.cpp MainApp.h settings/wxOctoSettings.h settings/OctoPrintServerSettingsPage.cpp settings/OctoPrintServerSettingsPage.h settings/OctoPrintServerSettingsPagePanel.cpp settings/OctoPrintServerSettingsPagePanel.h helper.h octoprint/OctoprintFile.cpp octoprint/OctoprintFile.h octoprint/FetchFilesThread.cpp octoprint/FetchFilesThread.h octoprint/OctoprintJob.cpp octoprint/OctoprintJob.h octoprint/FetchPrintStatusThread.cpp octoprint/FetchPrintStatusThread.h octoprint/OctoApiEventIds.h)
 target_link_libraries(wxocto ${wxWidgets_LIBRARIES} websocketpp::websocketpp easyhttpcppeasyhttp::easyhttpcppeasyhttp nlohmann_json::nlohmann_json)

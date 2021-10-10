@@ -4,14 +4,21 @@
 
 #include "MainWindow.h"
 #include "../MainApp.h"
+#include "../octoprint/OctoApiEventIds.h"
+#include "../octoprint/OctoprintJob.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
 
 MainWindow::MainWindow() : MainWindowBase() {
     Bind(wxEVT_SHOW, &MainWindow::handleShow, this);
-    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetched, this, FetchFilesThread::OctoFilesFetched);
-    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetchedError, this, FetchFilesThread::OctoFilesError);
+    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetched, this, OctoApiEventId::OctoFilesFetched);
+    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetchedError, this, OctoApiEventId::OctoFilesError);
+    Bind(wxEVT_THREAD, &MainWindow::handleJobFetched, this, OctoApiEventId::OctoJobFetched);
+    Bind(wxEVT_THREAD, &MainWindow::handleJobFetchedError, this, OctoApiEventId::OctoJobError);
+    Bind(wxEVT_TIMER, &MainWindow::handleTimer, this);
+    pollOctoTimer = new wxTimer(this);
+    pollOctoTimer->Start(500);
 }
 
 void MainWindow::setupEvents() {
@@ -24,11 +31,6 @@ void MainWindow::reloadSettings() {
     }
 }
 
-void MainWindow::handlePrinterSettings() {
-    MainWindowBase::handlePrinterSettings();
-    MainApp::getInstance()->ShowPreferencesEditor(this);
-}
-
 void MainWindow::handleShow(wxShowEvent &event) {
     auto settings = MainApp::getInstance()->GetSettings();
     if (settings.apiKey != "") {
@@ -39,10 +41,14 @@ void MainWindow::handleShow(wxShowEvent &event) {
 void MainWindow::updateView() {
     auto fetchFiles = new FetchFilesThread(this);
     fetchFiles->Run();
+
+    statusThread = new FetchPrintStatusThread(this);
+    statusThread->Run();
 }
 
 void MainWindow::handleFilesFetched(wxThreadEvent &event) {
     auto data = event.GetPayload<std::vector<OctoprintFile>>();
+    tlcFiles->DeleteAllItems();
     fillFileTree(tlcFiles->GetRootItem(), data);
 }
 
@@ -51,7 +57,7 @@ void MainWindow::handleFilesFetchedError(wxThreadEvent &event) {
 }
 
 void MainWindow::fillFileTree(wxTreeListItem parent, const std::vector<OctoprintFile> &files) {
-    for (const auto& file: files) {
+    for (const auto &file: files) {
         auto treeItem = tlcFiles->AppendItem(parent, "");
         tlcFiles->SetItemData(treeItem, new OctoprintFileClientData(file));
         tlcFiles->SetItemText(treeItem, FileListColumns::ColName, file.name);
@@ -68,5 +74,39 @@ void MainWindow::fillFileTree(wxTreeListItem parent, const std::vector<Octoprint
             fillFileTree(treeItem, file.children);
         }
     }
+}
+
+void MainWindow::handleJobFetched(wxThreadEvent &event) {
+    auto job = event.GetPayload<OctoprintJob>();
+    lblFile->SetLabel(job.file);
+    lblFinishTime->SetLabel(job.getFinishTime());
+    lblTimeElapsed->SetLabel(job.getTimeElapsed());
+    lblTimeLeft->SetLabel(job.getTimeLeft());
+    prgPrintProgress->SetValue(int(job.printProgress));
+}
+
+void MainWindow::handleJobFetchedError(wxThreadEvent &event) {
+    wxMessageBox(_("Failed to load job"));
+}
+
+void MainWindow::handleTimer(wxTimerEvent &event) {
+    statusThread = new FetchPrintStatusThread(this);
+    statusThread->Run();
+}
+
+void MainWindow::handleAddSpool(wxCommandEvent &event) {
+
+}
+
+void MainWindow::handleEditSpool(wxCommandEvent &event) {
+
+}
+
+void MainWindow::handleDeleteSpool(wxCommandEvent &event) {
+
+}
+
+void MainWindow::handlePrinterSettings(wxCommandEvent &event) {
+    MainApp::getInstance()->ShowPreferencesEditor(this);
 }
 

@@ -103,23 +103,23 @@ public:
 
     ~MainWindowBase() override;
 
-    virtual void handleExit();
+    virtual void handleExit(wxCommandEvent &event);
 
-    virtual void handlePrinterSettings();
+    virtual void handlePrinterSettings(wxCommandEvent &event) = 0;
 
-    virtual void handleAddSpool();
+    virtual void handleAddSpool(wxCommandEvent &event) = 0;
 
-    virtual void handleEditSpool();
+    virtual void handleEditSpool(wxCommandEvent &event) = 0;
 
-    virtual void handleDeleteSpool();
+    virtual void handleDeleteSpool(wxCommandEvent &event) = 0;
 
-    virtual void handleStartPrint();
+    virtual void handleStartPrint(wxCommandEvent &event);
 
-    virtual void handleResumePrint();
+    virtual void handleResumePrint(wxCommandEvent &event);
 
-    virtual void handlePausePrint();
+    virtual void handlePausePrint(wxCommandEvent &event);
 
-    virtual void handleCancelPrint();
+    virtual void handleCancelPrint(wxCommandEvent &event);
 };
 
 

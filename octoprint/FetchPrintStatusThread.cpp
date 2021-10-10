@@ -1,20 +1,18 @@
 //
-// Created by imanuel on 09.10.21.
+// Created by imanuel on 10.10.21.
 //
 
 #include <easyhttpcpp/EasyHttp.h>
-#include "FetchFilesThread.h"
+#include "FetchPrintStatusThread.h"
 #include "../MainApp.h"
-#include "OctoprintFile.h"
+#include "OctoprintJob.h"
 #include "OctoApiEventIds.h"
 
-FetchFilesThread::FetchFilesThread(wxWindow *parent) : wxThread(wxThreadKind::wxTHREAD_DETACHED), parent(parent) {}
-
-wxThread::ExitCode FetchFilesThread::Entry() {
+wxThread::ExitCode FetchPrintStatusThread::Entry() {
     auto settings = MainApp::getInstance()->GetSettings();
     auto request = easyhttpcpp::Request::Builder()
             .httpGet()
-            .setUrl(settings.server + "/api/files?recursive=true")
+            .setUrl(settings.server + "/api/job")
             .setHeader("X-Api-Key", settings.apiKey)
             .build();
     try {
@@ -24,14 +22,10 @@ wxThread::ExitCode FetchFilesThread::Entry() {
         if (response->isSuccessful() && response->getCode() == 200) {
             auto body = response->getBody()->toString();
             auto jsonBody = nlohmann::json::parse(body);
-            auto files = std::vector<OctoprintFile>();
-            for (const auto &item: jsonBody["files"]) {
-                files.push_back(handleFile(item));
-            }
 
             auto event = new wxThreadEvent();
-            event->SetPayload(files);
-            event->SetId(OctoApiEventId::OctoFilesFetched);
+            event->SetPayload(OctoprintJob::fromJson(jsonBody));
+            event->SetId(OctoApiEventId::OctoJobFetched);
             wxQueueEvent(parent, event);
         } else {
             throw std::exception();
@@ -39,20 +33,12 @@ wxThread::ExitCode FetchFilesThread::Entry() {
     } catch (const std::exception &e) {
         auto event = new wxThreadEvent();
         event->SetPayload(e);
-        event->SetId(OctoApiEventId::OctoFilesError);
+        event->SetId(OctoApiEventId::OctoJobError);
         wxQueueEvent(parent, event);
     }
 
     return nullptr;
 }
 
-OctoprintFile FetchFilesThread::handleFile(const nlohmann::json &json) {
-    auto file = OctoprintFile::fromJson(json);
-    if (json["type"] == "folder") {
-        for (const auto &item: json["children"]) {
-            file.children.push_back(handleFile(item));
-        }
-    }
-
-    return file;
-}
+FetchPrintStatusThread::FetchPrintStatusThread(wxWindow *parent) : wxThread(wxThreadKind::wxTHREAD_DETACHED),
+                                                                   parent(parent) {}
