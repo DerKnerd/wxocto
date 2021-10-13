@@ -17,7 +17,10 @@ enum OctoApiEventId {
     OctoPrintPaused,
     OctoPrintPauseError,
     OctoPrintResumed,
-    OctoPrintResumeError
+    OctoPrintResumeError,
+
+    OctoPrintSpoolManagerSpoolsFetched,
+    OctoPrintSpoolManagerSpoolsFetchError
 };
 
 #endif //WXOCTO_OCTOAPIEVENTIDS_H

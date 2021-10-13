@@ -22,6 +22,7 @@
 
 #include <utility>
 #include "../octoprint/OctoprintFile.h"
+#include "../octoprint/spoolmanager/OctoprintSpool.h"
 
 enum MainWindowActions {
     StartPrint = 200,
@@ -31,17 +32,31 @@ enum MainWindowActions {
     AddSpool,
     EditSpool,
     DeleteSpool,
+    SelectSpool,
     PrinterSettings,
 };
 
 enum FileListColumns {
-    ColName = 0,
-    ColSize = 1,
-    ColUploaded = 2,
-    ColModelSize = 3,
-    ColFilamentUse = 4,
-    ColEstimatedPrintTime = 5,
-    ColFullPath = 6
+    ColFileName = 0,
+    ColFileSize,
+    ColFileUploaded,
+    ColFileModelSize,
+    ColFileFilamentUse,
+    ColFileEstimatedPrintTime,
+    ColFileFullPath
+};
+
+enum SpoolListColumns {
+    ColSpoolName = 0,
+    ColSpoolMaterial,
+    ColSpoolLastUsed,
+    ColSpoolWeightTotal,
+    ColSpoolWeightUsed,
+    ColSpoolWeightLeft,
+    ColSpoolLengthTotal,
+    ColSpoolLengthUsed,
+    ColSpoolLengthLeft,
+    SpoolColumnCount
 };
 
 class OctoprintFileClientData : public wxClientData {
@@ -56,10 +71,25 @@ public:
     int Compare(wxTreeListCtrl *treelist, unsigned int column, wxTreeListItem first, wxTreeListItem second) override;
 };
 
-class MainWindowBase : public wxFrame {
-private:
-    void handleMenuOrToolbarClicked(wxCommandEvent &event);
+class OctoprintSpoolDataViewListModel : public wxDataViewVirtualListModel {
+public:
+    [[nodiscard]] unsigned int GetColumnCount() const override;
 
+    OctoprintSpoolDataViewListModel();
+
+    [[nodiscard]] wxString GetColumnType(unsigned int col) const override;
+
+    void GetValueByRow(wxVariant &variant, unsigned int row, unsigned int col) const override;
+
+    bool SetValueByRow(const wxVariant &variant, unsigned int row, unsigned int col) override;
+
+    void Fill(std::vector<OctoprintSpool> data);
+
+private:
+    std::vector<OctoprintSpool> items;
+};
+
+class MainWindowBase : public wxFrame {
 protected:
     wxMenu *printingMenu;
     wxToolBarBase *toolbar;
@@ -73,6 +103,8 @@ protected:
     wxTreeListCtrl *tlcFiles;
     wxPanel *nbpSpools;
     wxDataViewListCtrl *dvlSpools;
+    wxStatusBar *statusBar;
+    OctoprintSpoolDataViewListModel *spoolListModel;
 
 protected:
     virtual void setupEvents() {}
@@ -113,6 +145,8 @@ public:
     virtual void handleEditSpool(wxCommandEvent &event) = 0;
 
     virtual void handleDeleteSpool(wxCommandEvent &event) = 0;
+
+    virtual void handleSelectSpool(wxCommandEvent &event) = 0;
 
     virtual void handleStartPrint(wxCommandEvent &event) = 0;
 

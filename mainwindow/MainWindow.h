@@ -33,11 +33,15 @@ public:
 private:
     void handleFilesFetched(wxThreadEvent &event);
 
-    void handleFilesFetchedError(wxThreadEvent &event);
+    void handleFilesFetchError(wxThreadEvent &event);
 
     void handleJobFetched(wxThreadEvent &event);
 
-    void handleJobFetchedError(wxThreadEvent &event);
+    void handleJobFetchError(wxThreadEvent &event);
+
+    void handleSpoolsFetched(wxThreadEvent &event);
+
+    void handleSpoolsFetchError(wxThreadEvent &event);
 
     void handleTimer(wxTimerEvent &event);
 
@@ -65,6 +69,8 @@ public:
     MainWindow();
 
     void reloadSettings();
+
+    void handleSelectSpool(wxCommandEvent &event) override;
 };
 
 

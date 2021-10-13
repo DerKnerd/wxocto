@@ -3,16 +3,22 @@
 //
 
 #include "MainWindowBase.h"
+
+#include <utility>
+#include <iomanip>
 #include "../MainApp.h"
 #include "../helper.h"
 
-MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1280, 600)) {
+MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1280, 600)),
+                                   spoolListModel(new OctoprintSpoolDataViewListModel()) {
     auto parentSizer = new wxFlexGridSizer(2, 0, 0, 0);
     parentSizer->SetFlexibleDirection(wxBOTH);
     parentSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
     parentSizer->AddGrowableRow(0);
     parentSizer->AddGrowableCol(0);
     this->SetSizer(parentSizer);
+
+    statusBar = CreateStatusBar();
 
     toolbar = CreateToolBar(wxTB_HORIZONTAL | wxTB_HORZ_LAYOUT | wxTB_NOICONS);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
@@ -37,6 +43,8 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
                      nullptr);
     toolbar->AddTool(MainWindowActions::DeleteSpool, _("Delete spool"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
                      "", nullptr);
+    toolbar->AddTool(MainWindowActions::SelectSpool, _("Select spool"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
+                     "", nullptr);
 
     toolbar->Realize();
 
@@ -58,6 +66,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     spoolsMenu->Append(MainWindowActions::AddSpool, _("Add spool"));
     spoolsMenu->Append(MainWindowActions::EditSpool, _("Edit spool"));
     spoolsMenu->Append(MainWindowActions::DeleteSpool, _("Delete spool"));
+    spoolsMenu->Append(MainWindowActions::SelectSpool, _("Select spool"));
 
     menuBar->Append(fileMenu, "File");
     menuBar->Append(printingMenu, "Printing");
@@ -179,19 +188,20 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Last used"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Weight total"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Weight total (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Weight used"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Weight used (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Weight left"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Weight left (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Length total"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Length total (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Length used"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Length used (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
-    dvlSpools->AppendTextColumn(_("Length left"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
+    dvlSpools->AppendTextColumn(_("Length left (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
     nbContent->SetMinSize(wxSize(600, -1));
+    dvlSpools->AssociateModel(spoolListModel);
 
     if (!wxPersistenceManager::Get().Find(nbContent)) {
         wxPersistenceManager::Get().RegisterAndRestore(nbContent);
@@ -227,6 +237,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     Bind(wxEVT_MENU, &MainWindowBase::handleAddSpool, this, AddSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
+    Bind(wxEVT_MENU, &MainWindowBase::handleSelectSpool, this, SelectSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
 }
 
@@ -243,17 +254,111 @@ int OctoprintFileTreeListItemComparator::Compare(wxTreeListCtrl *treelist, unsig
     auto secondItem = dynamic_cast<OctoprintFileClientData *>(treelist->GetItemData(second));
 
     switch (column) {
-        case FileListColumns::ColName:
+        case FileListColumns::ColFileName:
             return firstItem->file.name.compare(secondItem->file.name);
-        case FileListColumns::ColSize:
+        case FileListColumns::ColFileSize:
             return (int) (firstItem->file.size - secondItem->file.size);
-        case FileListColumns::ColUploaded:
+        case FileListColumns::ColFileUploaded:
             return (int) (firstItem->file.uploaded - secondItem->file.uploaded);
-        case FileListColumns::ColFilamentUse:
+        case FileListColumns::ColFileFilamentUse:
             return (int) (firstItem->file.filamentLength - secondItem->file.filamentLength);
-        case FileListColumns::ColEstimatedPrintTime:
+        case FileListColumns::ColFileEstimatedPrintTime:
             return (int) (firstItem->file.estimatedPrintTime - secondItem->file.estimatedPrintTime);
         default:
             return 0;
     }
 }
+
+unsigned int OctoprintSpoolDataViewListModel::GetColumnCount() const {
+    return SpoolColumnCount;
+}
+
+wxString OctoprintSpoolDataViewListModel::GetColumnType(unsigned int col) const {
+    return "string";
+}
+
+void OctoprintSpoolDataViewListModel::GetValueByRow(wxVariant &variant, unsigned int row, unsigned int col) const {
+    auto item = items[row];
+    switch (col) {
+        case ColSpoolName:
+            variant = item.displayName;
+            break;
+        case ColSpoolMaterial:
+            variant = item.material;
+            break;
+        case ColSpoolLastUsed:
+            variant = item.getLastUsed();
+            break;
+        case ColSpoolWeightTotal:
+            variant = item.totalWeight;
+            break;
+        case ColSpoolWeightUsed:
+            variant = item.usedWeight;
+            break;
+        case ColSpoolWeightLeft:
+            variant = item.leftWeight;
+            break;
+        case ColSpoolLengthTotal:
+            variant = item.getTotalLength();
+            break;
+        case ColSpoolLengthUsed:
+            variant = item.getUsedLength();
+            break;
+        case ColSpoolLengthLeft:
+            variant = item.leftLength;
+            break;
+        default:
+            wxFAIL;
+            break;
+    }
+}
+
+bool OctoprintSpoolDataViewListModel::SetValueByRow(const wxVariant &variant, unsigned int row, unsigned int col) {
+    auto item = items[row];
+    switch (col) {
+        case ColSpoolName:
+            item.displayName = variant.GetString();
+            break;
+        case ColSpoolMaterial:
+            item.material = variant.GetString();
+            break;
+        case ColSpoolLastUsed:
+            item.lastUsed.ParseDate(variant);
+            break;
+        case ColSpoolWeightTotal:
+            item.totalWeight = variant.GetString();
+            break;
+        case ColSpoolWeightUsed:
+            item.usedWeight = variant.GetString();
+            break;
+        case ColSpoolWeightLeft:
+            item.leftWeight = variant.GetString();
+            break;
+        case ColSpoolLengthTotal:
+            item.totalLength = variant;
+            break;
+        case ColSpoolLengthUsed:
+            item.usedLength = variant;
+            break;
+        case ColSpoolLengthLeft:
+            item.leftLength = variant.GetString();
+            break;
+        default:
+            wxFAIL;
+            break;
+    }
+
+    return true;
+}
+
+void OctoprintSpoolDataViewListModel::Fill(std::vector<OctoprintSpool> data) {
+    Reset(0);
+    items.clear();
+    for (auto item: data) {
+        items.push_back(item);
+        RowAppended();
+    }
+}
+
+OctoprintSpoolDataViewListModel::OctoprintSpoolDataViewListModel() : wxDataViewVirtualListModel(0),
+                                                                     items(std::vector<OctoprintSpool>()) {}

@@ -9,17 +9,26 @@
 #include "../octoprint/CancelPrintThread.h"
 #include "../octoprint/PausePrintThread.h"
 #include "../octoprint/ResumePrintThread.h"
+#include "../octoprint/spoolmanager/OctoprintSpool.h"
+#include "../octoprint/spoolmanager/FetchSpoolsThread.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
+#include <wx/dataview.h>
 
 MainWindow::MainWindow() : MainWindowBase() {
     Bind(wxEVT_SHOW, &MainWindow::handleShow, this);
 
     Bind(wxEVT_THREAD, &MainWindow::handleFilesFetched, this, OctoApiEventId::OctoFilesFetched);
-    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetchedError, this, OctoApiEventId::OctoFilesError);
+    Bind(wxEVT_THREAD, &MainWindow::handleFilesFetchError, this, OctoApiEventId::OctoFilesError);
+
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetched, this, OctoApiEventId::OctoPrintSpoolManagerSpoolsFetched);
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetchError, this,
+         OctoApiEventId::OctoPrintSpoolManagerSpoolsFetchError);
+
     Bind(wxEVT_THREAD, &MainWindow::handleJobFetched, this, OctoApiEventId::OctoJobFetched);
-    Bind(wxEVT_THREAD, &MainWindow::handleJobFetchedError, this, OctoApiEventId::OctoJobError);
+    Bind(wxEVT_THREAD, &MainWindow::handleJobFetchError, this, OctoApiEventId::OctoJobError);
+
     Bind(wxEVT_THREAD, &MainWindow::handlePrintStartError, this, OctoApiEventId::OctoPrintStartError);
 
     Bind(wxEVT_TIMER, &MainWindow::handleTimer, this);
@@ -49,6 +58,9 @@ void MainWindow::updateView() {
     auto fetchFiles = new FetchFilesThread(this);
     fetchFiles->Run();
 
+    auto fetchSpools = new FetchSpoolsThread(this);
+    fetchSpools->Run();
+
     statusThread = new FetchPrintStatusThread(this);
     statusThread->Run();
 }
@@ -59,25 +71,25 @@ void MainWindow::handleFilesFetched(wxThreadEvent &event) {
     fillFileTree(tlcFiles->GetRootItem(), data);
 }
 
-void MainWindow::handleFilesFetchedError(wxThreadEvent &event) {
-    wxMessageBox(_("Failed to load files"), _("Error"), wxCENTRE | wxICON_ERROR);
+void MainWindow::handleFilesFetchError(wxThreadEvent &event) {
+    wxLogStatus(_("Failed to load files"));
 }
 
 void MainWindow::fillFileTree(wxTreeListItem parent, const std::vector<OctoprintFile> &files) {
     for (const auto &file: files) {
         auto treeItem = tlcFiles->AppendItem(parent, "");
         tlcFiles->SetItemData(treeItem, new OctoprintFileClientData(file));
-        tlcFiles->SetItemText(treeItem, FileListColumns::ColName, file.name);
-        tlcFiles->SetItemText(treeItem, FileListColumns::ColSize, file.getSize());
-        tlcFiles->SetItemText(treeItem, FileListColumns::ColFullPath, file.path);
+        tlcFiles->SetItemText(treeItem, FileListColumns::ColFileName, file.name);
+        tlcFiles->SetItemText(treeItem, FileListColumns::ColFileSize, file.getSize());
+        tlcFiles->SetItemText(treeItem, FileListColumns::ColFileFullPath, file.path);
         if (file.type == OctoprintFile::File) {
             auto uploaded = new wxDateTime(file.uploaded);
-            tlcFiles->SetItemText(treeItem, FileListColumns::ColUploaded, uploaded->Format());
-            tlcFiles->SetItemText(treeItem, FileListColumns::ColModelSize, file.getDimensions());
+            tlcFiles->SetItemText(treeItem, FileListColumns::ColFileUploaded, uploaded->Format());
+            tlcFiles->SetItemText(treeItem, FileListColumns::ColFileModelSize, file.getDimensions());
             auto ssFilamentUse = std::stringstream();
             ssFilamentUse << std::fixed << std::setprecision(2) << file.filamentLength / 1000 << "m";
-            tlcFiles->SetItemText(treeItem, FileListColumns::ColFilamentUse, ssFilamentUse.str());
-            tlcFiles->SetItemText(treeItem, FileListColumns::ColEstimatedPrintTime, file.getPrintTime());
+            tlcFiles->SetItemText(treeItem, FileListColumns::ColFileFilamentUse, ssFilamentUse.str());
+            tlcFiles->SetItemText(treeItem, FileListColumns::ColFileEstimatedPrintTime, file.getPrintTime());
         } else {
             fillFileTree(treeItem, file.children);
         }
@@ -121,7 +133,8 @@ void MainWindow::handleJobFetched(wxThreadEvent &event) {
     printingMenu->Enable(MainWindowActions::ResumePrint, job.state == Paused || job.state == Pausing);
 }
 
-void MainWindow::handleJobFetchedError(wxThreadEvent &event) {
+void MainWindow::handleJobFetchError(wxThreadEvent &event) {
+    wxLogStatus(_("Failed to fetch job files"));
     lblFile->SetLabel(_("No file selected"));
     lblFinishTime->SetLabel(_("No print started"));
     lblTimeElapsed->SetLabel(_("No print started"));
@@ -151,6 +164,9 @@ void MainWindow::handleEditSpool(wxCommandEvent &event) {
 }
 
 void MainWindow::handleDeleteSpool(wxCommandEvent &event) {
+}
+
+void MainWindow::handleSelectSpool(wxCommandEvent &event) {
 }
 
 void MainWindow::handlePrinterSettings(wxCommandEvent &event) {
@@ -200,7 +216,7 @@ void MainWindow::handleCancelPrint(wxCommandEvent &event) {
 }
 
 void MainWindow::handlePrintStartError(wxThreadEvent &event) {
-    wxMessageBox(_("Failed to start print"));
+    wxLogStatus(_("Failed to start print"));
 }
 
 void MainWindow::handleCancelPrintDialogClosed(wxWindowModalDialogEvent &event) {
@@ -217,3 +233,11 @@ void MainWindow::handlePausePrintDialogClosed(wxWindowModalDialogEvent &event) {
     }
 }
 
+void MainWindow::handleSpoolsFetched(wxThreadEvent &event) {
+    auto spools = event.GetPayload<std::vector<OctoprintSpool>>();
+    spoolListModel->Fill(spools);
+}
+
+void MainWindow::handleSpoolsFetchError(wxThreadEvent &event) {
+    wxLogStatus(_("Failed to fetch spools"));
+}
