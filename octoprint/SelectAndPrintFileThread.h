@@ -12,12 +12,12 @@
 class SelectAndPrintFileThread : public wxThread {
 private:
 public:
-    explicit SelectAndPrintFileThread(wxWindow *parent, std::string origin, std::string filepath);
+    explicit SelectAndPrintFileThread(wxWindow *parent, wxString origin, wxString filepath);
 
 private:
     wxWindow *parent;
-    std::string filepath;
-    std::string origin;
+    wxString filepath;
+    wxString origin;
 
 protected:
     void *Entry() override;

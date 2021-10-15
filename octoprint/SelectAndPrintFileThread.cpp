@@ -4,7 +4,6 @@
 
 #include <easyhttpcpp/EasyHttp.h>
 
-#include <utility>
 #include "SelectAndPrintFileThread.h"
 #include "OctoApiEventIds.h"
 #include "../MainApp.h"
@@ -16,7 +15,7 @@ wxThread::ExitCode SelectAndPrintFileThread::Entry() {
             Poco::makeShared<std::string>(R"({"print": true, "command": "select"})"));
     auto request = easyhttpcpp::Request::Builder()
             .httpPost(body)
-            .setUrl(settings.server + "/api/files/" + origin + "/" + filepath)
+            .setUrl(settings.server + "/api/files/" + origin.utf8_string() + "/" + filepath.utf8_string())
             .setHeader("X-Api-Key", settings.apiKey)
             .build();
     try {
@@ -41,9 +40,9 @@ wxThread::ExitCode SelectAndPrintFileThread::Entry() {
     return nullptr;
 }
 
-SelectAndPrintFileThread::SelectAndPrintFileThread(wxWindow *parent, std::string origin, std::string filepath)
+SelectAndPrintFileThread::SelectAndPrintFileThread(wxWindow *parent, wxString origin, wxString filepath)
         : wxThread(wxThreadKind::wxTHREAD_DETACHED),
           parent(parent),
-          origin(std::move(origin)),
-          filepath(std::move(filepath)) {}
+          origin(origin),
+          filepath(filepath) {}
 

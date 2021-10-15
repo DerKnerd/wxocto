@@ -17,8 +17,8 @@ public:
     };
 
 public:
-    std::string name;
-    std::string path;
+    wxString name;
+    wxString path;
     long size = 0L;
     long uploaded = 0L;
     double depth = 0.0;
@@ -28,12 +28,12 @@ public:
     double estimatedPrintTime = 0.0;
     std::vector<OctoprintFile> children;
     FileType type;
-    std::string origin;
+    wxString origin;
 
-    [[nodiscard]] std::string getDimensions() const;
+    [[nodiscard]] wxString getDimensions() const;
 
-    [[nodiscard]] std::string getPrintTime() const;
-    [[nodiscard]] std::string getSize() const;
+    [[nodiscard]] wxString getPrintTime() const;
+    [[nodiscard]] wxString getSize() const;
 
     static OctoprintFile fromJson(const nlohmann::json &json);
 };

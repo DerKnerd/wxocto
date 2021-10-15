@@ -13,10 +13,10 @@ OctoprintFile OctoprintFile::fromJson(const nlohmann::json &json) {
     } else {
         file.uploaded = 0;
     }
-    file.path = json["path"];
-    file.name = json["display"];
+    file.path = wxString::FromUTF8(json["path"]);
+    file.name = wxString::FromUTF8(json["display"]);
     file.size = json["size"];
-    file.origin = json["origin"];
+    file.origin = wxString::FromUTF8(json["origin"]);
     if (json.contains("gcodeAnalysis")) {
         auto gcodeAnalysis = json["gcodeAnalysis"];
         if (gcodeAnalysis.contains("estimatedPrintTime")) {
@@ -41,18 +41,18 @@ OctoprintFile OctoprintFile::fromJson(const nlohmann::json &json) {
     return file;
 }
 
-std::string OctoprintFile::getDimensions() const {
+wxString OctoprintFile::getDimensions() const {
     if (width == 0 && height == 0 && depth == 0) {
         return "";
     }
 
-    auto ss = std::stringstream();
-    ss << std::fixed << std::setprecision(2) << width << "mm × " << height << "mm × " << depth << "mm";
+    auto ss = std::wstringstream();
+    ss << std::fixed << std::setprecision(2) << width << L"mm × " << height << L"mm × " << depth << L"mm";
 
     return ss.str();
 }
 
-std::string OctoprintFile::getPrintTime() const {
+wxString OctoprintFile::getPrintTime() const {
     if (estimatedPrintTime == 0) {
         return "";
     }
@@ -64,7 +64,7 @@ std::string OctoprintFile::getPrintTime() const {
     return ss.str();
 }
 
-std::string OctoprintFile::getSize() const {
+wxString OctoprintFile::getSize() const {
     if (size == 0) {
         return "";
     }

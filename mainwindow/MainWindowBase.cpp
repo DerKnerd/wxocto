@@ -4,7 +4,6 @@
 
 #include "MainWindowBase.h"
 
-#include <utility>
 #include <iomanip>
 #include "../MainApp.h"
 #include "../helper.h"
@@ -201,7 +200,6 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     dvlSpools->AppendTextColumn(_("Length left (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
                                 wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
     nbContent->SetMinSize(wxSize(600, -1));
-    dvlSpools->AssociateModel(spoolListModel);
 
     if (!wxPersistenceManager::Get().Find(nbContent)) {
         wxPersistenceManager::Get().RegisterAndRestore(nbContent);
@@ -277,35 +275,62 @@ wxString OctoprintSpoolDataViewListModel::GetColumnType(unsigned int col) const 
     return "string";
 }
 
-void OctoprintSpoolDataViewListModel::GetValueByRow(wxVariant &variant, unsigned int row, unsigned int col) const {
-    auto item = items[row];
+void OctoprintSpoolDataViewListModel::Fill(std::vector<OctoprintSpool *> data, int selectedDatabaseId) {
+    items.clear();
+    for (const auto &item: data) {
+        items.push_back(item);
+    }
+
+    selectedSpool = *std::find_if(items.begin(), items.end(), [&](const auto &item) {
+        return item->databaseId == selectedDatabaseId;
+    }).base();
+}
+
+OctoprintSpoolDataViewListModel::OctoprintSpoolDataViewListModel() : wxDataViewModel(),
+                                                                     items(std::vector<OctoprintSpool *>()) {}
+
+wxDataViewItem OctoprintSpoolDataViewListModel::getSelectedItem() const {
+    return wxDataViewItem(selectedSpool);
+}
+
+unsigned int
+OctoprintSpoolDataViewListModel::GetChildren(const wxDataViewItem &item, wxDataViewItemArray &children) const {
+    for (auto elem: items) {
+        children.Add(wxDataViewItem(elem));
+    }
+
+    return items.size();
+}
+
+void OctoprintSpoolDataViewListModel::GetValue(wxVariant &variant, const wxDataViewItem &item, unsigned int col) const {
+    auto spool = (OctoprintSpool *) item.GetID();
     switch (col) {
         case ColSpoolName:
-            variant = item.displayName;
+            variant = spool->displayName;
             break;
         case ColSpoolMaterial:
-            variant = item.material;
+            variant = spool->material;
             break;
         case ColSpoolLastUsed:
-            variant = item.getLastUsed();
+            variant = spool->getLastUsed();
             break;
         case ColSpoolWeightTotal:
-            variant = item.totalWeight;
+            variant = spool->totalWeight;
             break;
         case ColSpoolWeightUsed:
-            variant = item.usedWeight;
+            variant = spool->usedWeight;
             break;
         case ColSpoolWeightLeft:
-            variant = item.leftWeight;
+            variant = spool->leftWeight;
             break;
         case ColSpoolLengthTotal:
-            variant = item.getTotalLength();
+            variant = spool->getTotalLength();
             break;
         case ColSpoolLengthUsed:
-            variant = item.getUsedLength();
+            variant = spool->getUsedLength();
             break;
         case ColSpoolLengthLeft:
-            variant = item.leftLength;
+            variant = spool->leftLength;
             break;
         default:
             wxFAIL;
@@ -313,35 +338,35 @@ void OctoprintSpoolDataViewListModel::GetValueByRow(wxVariant &variant, unsigned
     }
 }
 
-bool OctoprintSpoolDataViewListModel::SetValueByRow(const wxVariant &variant, unsigned int row, unsigned int col) {
-    auto item = items[row];
+bool OctoprintSpoolDataViewListModel::SetValue(const wxVariant &variant, const wxDataViewItem &item, unsigned int col) {
+    auto spool = (OctoprintSpool *) item.GetID();
     switch (col) {
         case ColSpoolName:
-            item.displayName = variant.GetString();
+            spool->displayName = variant.GetString();
             break;
         case ColSpoolMaterial:
-            item.material = variant.GetString();
+            spool->material = variant.GetString();
             break;
         case ColSpoolLastUsed:
-            item.lastUsed.ParseDate(variant);
+            spool->lastUsed.ParseDate(variant);
             break;
         case ColSpoolWeightTotal:
-            item.totalWeight = variant.GetString();
+            spool->totalWeight = variant.GetString();
             break;
         case ColSpoolWeightUsed:
-            item.usedWeight = variant.GetString();
+            spool->usedWeight = variant.GetString();
             break;
         case ColSpoolWeightLeft:
-            item.leftWeight = variant.GetString();
+            spool->leftWeight = variant.GetString();
             break;
         case ColSpoolLengthTotal:
-            item.totalLength = variant;
+            spool->totalLength = variant;
             break;
         case ColSpoolLengthUsed:
-            item.usedLength = variant;
+            spool->usedLength = variant;
             break;
         case ColSpoolLengthLeft:
-            item.leftLength = variant.GetString();
+            spool->leftLength = variant.GetString();
             break;
         default:
             wxFAIL;
@@ -351,14 +376,10 @@ bool OctoprintSpoolDataViewListModel::SetValueByRow(const wxVariant &variant, un
     return true;
 }
 
-void OctoprintSpoolDataViewListModel::Fill(std::vector<OctoprintSpool> data) {
-    Reset(0);
-    items.clear();
-    for (auto item: data) {
-        items.push_back(item);
-        RowAppended();
-    }
+wxDataViewItem OctoprintSpoolDataViewListModel::GetParent(const wxDataViewItem &item) const {
+    return wxDataViewItem(nullptr);
 }
 
-OctoprintSpoolDataViewListModel::OctoprintSpoolDataViewListModel() : wxDataViewVirtualListModel(0),
-                                                                     items(std::vector<OctoprintSpool>()) {}
+bool OctoprintSpoolDataViewListModel::IsContainer(const wxDataViewItem &item) const {
+    return false;
+}

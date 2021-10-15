@@ -9,7 +9,6 @@
 #include "../octoprint/CancelPrintThread.h"
 #include "../octoprint/PausePrintThread.h"
 #include "../octoprint/ResumePrintThread.h"
-#include "../octoprint/spoolmanager/OctoprintSpool.h"
 #include "../octoprint/spoolmanager/FetchSpoolsThread.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
@@ -234,8 +233,15 @@ void MainWindow::handlePausePrintDialogClosed(wxWindowModalDialogEvent &event) {
 }
 
 void MainWindow::handleSpoolsFetched(wxThreadEvent &event) {
-    auto spools = event.GetPayload<std::vector<OctoprintSpool>>();
-    spoolListModel->Fill(spools);
+    data = event.GetPayload<OctoprintSpoolData>();
+    spoolListModel->Fill(data.spools, data.selectedSpool);
+    dvlSpools->AssociateModel(spoolListModel.get());
+
+    auto spool = wxDataViewItem(spoolListModel->getSelectedItem());
+    auto item = wxDataViewItem(spool);
+    if (item.IsOk()) {
+        dvlSpools->SetCurrentItem(item);
+    }
 }
 
 void MainWindow::handleSpoolsFetchError(wxThreadEvent &event) {

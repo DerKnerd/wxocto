@@ -8,12 +8,14 @@
 #include "OctoprintSpool.h"
 #include "../../MainApp.h"
 #include "../OctoApiEventIds.h"
+#include "OctoprintSpoolData.h"
 
 void *FetchSpoolsThread::Entry() {
     auto settings = MainApp::getInstance()->GetSettings();
     auto request = easyhttpcpp::Request::Builder()
             .httpGet()
-            .setUrl(settings.server + "/plugin/SpoolManager/loadSpoolsByQuery?from=0&to=9999999&sortColumn=displayName&sortOrder=asc&filterName=all")
+            .setUrl(settings.server +
+                    "/plugin/SpoolManager/loadSpoolsByQuery?from=0&to=9999999&sortColumn=displayName&sortOrder=asc&filterName=all")
             .setHeader("X-Api-Key", settings.apiKey)
             .build();
     try {
@@ -23,13 +25,24 @@ void *FetchSpoolsThread::Entry() {
         if (response->isSuccessful() && response->getCode() == 200) {
             auto body = response->getBody()->toString();
             auto jsonBody = nlohmann::json::parse(body);
-            auto spools = std::vector<OctoprintSpool>();
-            for (const auto &item: jsonBody["allSpools"]) {
-                spools.push_back(OctoprintSpool::fromJson(item));
+            auto spoolData = OctoprintSpoolData();
+            auto selectedSpoolId = 0;
+            for (const auto &item: jsonBody["selectedSpools"]) {
+                selectedSpoolId = item["databaseId"];
+                break;
             }
 
+            auto spools = std::vector<OctoprintSpool*>();
+            for (const auto &item: jsonBody["allSpools"]) {
+                auto spool = OctoprintSpool::fromJson(item);
+                spools.push_back(spool);
+            }
+
+            spoolData.selectedSpool = selectedSpoolId;
+            spoolData.spools = spools;
+
             auto event = new wxThreadEvent();
-            event->SetPayload(spools);
+            event->SetPayload(spoolData);
             event->SetId(OctoApiEventId::OctoPrintSpoolManagerSpoolsFetched);
             wxQueueEvent(parent, event);
         } else {

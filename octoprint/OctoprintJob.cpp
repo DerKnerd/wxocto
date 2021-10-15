@@ -8,7 +8,7 @@
 #include <iomanip>
 #include "OctoprintJob.h"
 
-std::string OctoprintJob::getTimeElapsed() const {
+wxString OctoprintJob::getTimeElapsed() const {
     if (state != Printing && state != Paused && state != Pausing) {
         return _("No print started").ToStdString();
     }
@@ -23,7 +23,7 @@ std::string OctoprintJob::getTimeElapsed() const {
     return ss.str();
 }
 
-std::string OctoprintJob::getTimeLeft() const {
+wxString OctoprintJob::getTimeLeft() const {
     if (timeLeft == 0) {
         return _("No print started").ToStdString();
     }
@@ -38,9 +38,9 @@ std::string OctoprintJob::getTimeLeft() const {
     return ss.str();
 }
 
-std::string OctoprintJob::getFinishTime() const {
+wxString OctoprintJob::getFinishTime() const {
     if (timeLeft == 0) {
-        return _("No print started").ToStdString();
+        return _("No print started");
     }
 
     auto seconds = timeLeft % 60;
@@ -68,18 +68,18 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
                 job.file = _("No file selected");
                 job.fileSelected = false;
             } else {
-                job.file = jsonFile["name"];
+                job.file = wxString::FromUTF8(jsonFile["name"]);
                 job.fileSelected = true;
             }
             if (jsonFile["path"].is_null()) {
                 job.path = "";
             } else {
-                job.path = jsonFile["path"];
+                job.path = wxString::FromUTF8(jsonFile["path"]);
             }
             if (jsonFile["origin"].is_null()) {
                 job.origin = "";
             } else {
-                job.origin = jsonFile["origin"];
+                job.origin = wxString::FromUTF8(jsonFile["origin"]);
             }
         }
     } else {
@@ -110,7 +110,7 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
         job.printProgress = 0;
     }
 
-    auto state = json["state"].get<std::string>();
+    auto state = wxString::FromUTF8(json["state"].get<std::string>());
     if (state == "Operational") {
         job.state = OctoprintJobState::Operational;
     } else if (state == "Printing") {

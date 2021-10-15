@@ -9,6 +9,7 @@
 #include "../octoprint/FetchFilesThread.h"
 #include "../octoprint/FetchPrintStatusThread.h"
 #include "../octoprint/OctoprintJob.h"
+#include "../octoprint/spoolmanager/OctoprintSpoolData.h"
 #include <wx/app.h>
 
 class MainWindow : public MainWindowBase {
@@ -50,6 +51,8 @@ private:
     void handleCancelPrintDialogClosed(wxWindowModalDialogEvent &event);
 
     void handlePausePrintDialogClosed(wxWindowModalDialogEvent &event);
+
+    OctoprintSpoolData data;
 
 public:
     void handleResumePrint(wxCommandEvent &event) override;

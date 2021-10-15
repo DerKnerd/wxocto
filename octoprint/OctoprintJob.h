@@ -25,17 +25,17 @@ public:
     double printProgress;
     time_t timeElapsed;
     time_t timeLeft;
-    std::string file;
+    wxString file;
     OctoprintJobState state;
-    std::string path;
-    std::string origin;
+    wxString path;
+    wxString origin;
     bool fileSelected;
 
-    [[nodiscard]]std::string getTimeElapsed() const;
+    [[nodiscard]]wxString getTimeElapsed() const;
 
-    [[nodiscard]]std::string getTimeLeft() const;
+    [[nodiscard]]wxString getTimeLeft() const;
 
-    [[nodiscard]]std::string getFinishTime() const;
+    [[nodiscard]]wxString getFinishTime() const;
 
     static OctoprintJob fromJson(const nlohmann::json &json);
 };

@@ -71,22 +71,30 @@ public:
     int Compare(wxTreeListCtrl *treelist, unsigned int column, wxTreeListItem first, wxTreeListItem second) override;
 };
 
-class OctoprintSpoolDataViewListModel : public wxDataViewVirtualListModel {
+class OctoprintSpoolDataViewListModel : public wxDataViewModel {
 public:
+    unsigned int GetChildren(const wxDataViewItem &item, wxDataViewItemArray &children) const override;
+
     [[nodiscard]] unsigned int GetColumnCount() const override;
 
     OctoprintSpoolDataViewListModel();
 
     [[nodiscard]] wxString GetColumnType(unsigned int col) const override;
 
-    void GetValueByRow(wxVariant &variant, unsigned int row, unsigned int col) const override;
+    void GetValue(wxVariant &variant, const wxDataViewItem &item, unsigned int col) const override;
 
-    bool SetValueByRow(const wxVariant &variant, unsigned int row, unsigned int col) override;
+    bool SetValue(const wxVariant &variant, const wxDataViewItem &item, unsigned int col) override;
 
-    void Fill(std::vector<OctoprintSpool> data);
+    [[nodiscard]] wxDataViewItem GetParent(const wxDataViewItem &item) const override;
 
-private:
-    std::vector<OctoprintSpool> items;
+    [[nodiscard]] bool IsContainer(const wxDataViewItem &item) const override;
+
+    void Fill(std::vector<OctoprintSpool *> data, int selectedDatabaseId);
+
+    [[nodiscard]] wxDataViewItem getSelectedItem() const;
+
+    std::vector<OctoprintSpool *> items;
+    OctoprintSpool *selectedSpool;
 };
 
 class MainWindowBase : public wxFrame {
@@ -104,7 +112,8 @@ protected:
     wxPanel *nbpSpools;
     wxDataViewListCtrl *dvlSpools;
     wxStatusBar *statusBar;
-    OctoprintSpoolDataViewListModel *spoolListModel;
+    wxObjectDataPtr<OctoprintSpoolDataViewListModel> spoolListModel;
+    OctoprintSpool selectedSpool;
 
 protected:
     virtual void setupEvents() {}

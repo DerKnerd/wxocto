@@ -14,37 +14,40 @@ class OctoprintSpool {
 public:
     long databaseId;
 
-    std::string displayName;
-    std::string colorName;
-    std::string color;
-    std::string vendor;
-    std::string material;
+    wxString displayName;
+    wxString colorName;
+    wxString color;
+    wxString vendor;
+    wxString material;
     double density;
     double diameter;
     double tolerance;
 
     double temperatureTool;
     double temperatureBed;
-    std::string totalWeight;
-    std::string usedWeight;
-    std::string spoolWeight;
-    std::string leftWeight;
+    wxString totalWeight;
+    wxString usedWeight;
+    wxString spoolWeight;
+    wxString leftWeight;
     double totalLength;
     double usedLength;
-    std::string leftLength;
+    wxString leftLength;
 
-    std::string purchasedFrom;
+    wxString purchasedFrom;
     double cost;
-    std::string costUnit;
+    wxString costUnit;
     wxDateTime purchasedOn;
     wxDateTime lastUsed;
 
-    [[nodiscard]] std::string getPurchasedOn() const;
-    [[nodiscard]] std::string getLastUsed() const;
-    [[nodiscard]] std::string getUsedLength() const;
-    [[nodiscard]] std::string getTotalLength() const;
+    [[nodiscard]] wxString getPurchasedOn() const;
 
-    static OctoprintSpool fromJson(const nlohmann::json &json);
+    [[nodiscard]] wxString getLastUsed() const;
+
+    [[nodiscard]] wxString getUsedLength() const;
+
+    [[nodiscard]] wxString getTotalLength() const;
+
+    static OctoprintSpool *fromJson(const nlohmann::json &json);
 };
 
 

@@ -5,7 +5,6 @@
 #ifndef WXOCTO_FETCHSPOOLSTHREAD_H
 #define WXOCTO_FETCHSPOOLSTHREAD_H
 
-
 #include <wx/thread.h>
 #include <wx/window.h>
 
