@@ -182,23 +182,23 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     dvlSpoolsSizer->Add(dvlSpools, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
 
     dvlSpools->AppendTextColumn(_("Name"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Material"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Last used"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Weight total (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Weight used (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Weight left (g)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Length total (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Length used (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     dvlSpools->AppendTextColumn(_("Length left (mm)"), wxDATAVIEW_CELL_INERT, WXC_FROM_DIP(-2), wxALIGN_LEFT,
-                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_REORDERABLE);
+                                wxDATAVIEW_COL_RESIZABLE | wxDATAVIEW_COL_REORDERABLE);
     nbContent->SetMinSize(wxSize(600, -1));
 
     if (!wxPersistenceManager::Get().Find(nbContent)) {
