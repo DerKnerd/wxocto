@@ -10,6 +10,8 @@
 #include "../octoprint/PausePrintThread.h"
 #include "../octoprint/ResumePrintThread.h"
 #include "../octoprint/spoolmanager/FetchSpoolsThread.h"
+#include "../spoolmanager/AddSpoolDialog.h"
+#include "../spoolmanager/EditSpoolDialog.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
@@ -157,9 +159,14 @@ void MainWindow::handleTimer(wxTimerEvent &event) {
 }
 
 void MainWindow::handleAddSpool(wxCommandEvent &event) {
+    auto dialog = new AddSpoolDialog(this);
+    dialog->ShowWindowModal();
 }
 
 void MainWindow::handleEditSpool(wxCommandEvent &event) {
+    auto dialog = new EditSpoolDialog(this);
+    dialog->setSpool((OctoprintSpool *) dvlSpools->GetSelection().GetID());
+    dialog->ShowWindowModal();
 }
 
 void MainWindow::handleDeleteSpool(wxCommandEvent &event) {

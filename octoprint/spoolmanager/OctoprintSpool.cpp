@@ -62,6 +62,9 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
     if (json["usedLength"].is_number()) {
         spool->usedLength = json["usedLength"];
     }
+    if (json["cost"].is_number()) {
+        spool->cost = json["cost"];
+    }
     if (json["remainingLength"].is_string()) {
         spool->leftLength = wxString::FromUTF8(json["remainingLength"]);
     }

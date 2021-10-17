@@ -119,27 +119,6 @@ protected:
     virtual void setupEvents() {}
 
 public:
-    wxToolBarBase *getTbPrinting() { return toolbar; }
-
-    wxGauge *getPrgPrintProgress() { return prgPrintProgress; }
-
-    wxStaticText *getLblTimeElapsed() { return lblTimeElapsed; }
-
-    wxStaticText *getLblTimeLeft() { return lblTimeLeft; }
-
-    wxStaticText *getLblFinishTime() { return lblFinishTime; }
-
-    wxStaticText *getLblFile() { return lblFile; }
-
-    wxTreeListCtrl *getTlcFiles() { return tlcFiles; }
-
-    wxPanel *getNbpFiles() { return nbpFiles; }
-
-    wxDataViewListCtrl *getDvlSpools() { return dvlSpools; }
-
-    wxPanel *getNbpSpools() { return nbpSpools; }
-
-    wxNotebook *getNbContent() { return nbContent; }
 
     MainWindowBase();
 
