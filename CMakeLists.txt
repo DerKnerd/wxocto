@@ -4,7 +4,7 @@ project(wxocto CXX)
 set(CMAKE_CXX_STANDARD 23)
 
 # Request the required wxWidgets libs
-find_package(wxWidgets 3.1 COMPONENTS all REQUIRED)
+find_package(wxWidgets 3.1 REQUIRED)
 
 # Include the wxWidgets use file to initialize various settings
 include(${wxWidgets_USE_FILE})
@@ -23,8 +23,6 @@ include(./conan.cmake)
 
 conan_cmake_configure(
     REQUIRES
-    openssl/1.1.1k
-    websocketpp/0.8.2
     easyhttpcpp/2.1.0
     nlohmann_json/3.10.2
     GENERATORS cmake_find_package
