@@ -8,18 +8,13 @@
 #include "../MainApp.h"
 #include "../helper.h"
 
-MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1280, 600)),
+MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1280, 600),
+                                           wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
                                    spoolListModel(new OctoprintSpoolDataViewListModel()) {
-    auto parentSizer = new wxFlexGridSizer(2, 0, 0, 0);
-    parentSizer->SetFlexibleDirection(wxBOTH);
-    parentSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-    parentSizer->AddGrowableRow(0);
-    parentSizer->AddGrowableCol(0);
-    this->SetSizer(parentSizer);
-
+    auto panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
     statusBar = CreateStatusBar();
 
-    toolbar = CreateToolBar(wxTB_HORIZONTAL | wxTB_HORZ_LAYOUT | wxTB_NOICONS);
+    toolbar = CreateToolBar(wxTB_HORIZONTAL | wxTB_HORZ_LAYOUT | wxTB_NOICONS | wxTB_TEXT);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
 
     toolbar->AddTool(MainWindowActions::PrinterSettings, _("Printer settings"), wxNullBitmap, wxNullBitmap,
@@ -76,9 +71,9 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     contentSizer->AddGrowableRow(0);
     contentSizer->AddGrowableCol(1);
 
-    parentSizer->Add(contentSizer, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
+    this->SetSizer(contentSizer);
 
-    auto printStatusSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Status")), wxVERTICAL);
+    auto printStatusSizer = new wxStaticBoxSizer(new wxStaticBox(panel, wxID_ANY, _("Status")), wxVERTICAL);
 
     contentSizer->Add(printStatusSizer, 0, wxALL, WXC_FROM_DIP(5));
 
@@ -88,60 +83,60 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
 
     printStatusSizer->Add(printStatusContentSizer, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
 
-    auto printProgressLabel = new wxStaticText(this, wxID_ANY, _("Print progress"), wxDefaultPosition,
+    auto printProgressLabel = new wxStaticText(panel, wxID_ANY, _("Print progress"), wxDefaultPosition,
                                                wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(printProgressLabel, 0, wxALL, WXC_FROM_DIP(5));
 
-    prgPrintProgress = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)),
+    prgPrintProgress = new wxGauge(panel, wxID_ANY, 100, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)),
                                    wxGA_SMOOTH | wxGA_HORIZONTAL);
     prgPrintProgress->SetValue(0);
 
     printStatusContentSizer->Add(prgPrintProgress, 0, wxALL | wxALIGN_CENTER, WXC_FROM_DIP(5));
     prgPrintProgress->SetMinSize(wxSize(200, -1));
 
-    auto timeElapsedLabel = new wxStaticText(this, wxID_ANY, _("Time elapsed"), wxDefaultPosition,
+    auto timeElapsedLabel = new wxStaticText(panel, wxID_ANY, _("Time elapsed"), wxDefaultPosition,
                                              wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(timeElapsedLabel, 0, wxALL, WXC_FROM_DIP(5));
 
-    lblTimeElapsed = new wxStaticText(this, wxID_ANY, _("No print started"), wxDefaultPosition,
+    lblTimeElapsed = new wxStaticText(panel, wxID_ANY, _("No print started"), wxDefaultPosition,
                                       wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(lblTimeElapsed, 0, wxALL, WXC_FROM_DIP(5));
 
-    auto timeLeftLabel = new wxStaticText(this, wxID_ANY, _("Time left"), wxDefaultPosition,
+    auto timeLeftLabel = new wxStaticText(panel, wxID_ANY, _("Time left"), wxDefaultPosition,
                                           wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(timeLeftLabel, 0, wxALL, WXC_FROM_DIP(5));
 
-    lblTimeLeft = new wxStaticText(this, wxID_ANY, _("No print started"), wxDefaultPosition,
+    lblTimeLeft = new wxStaticText(panel, wxID_ANY, _("No print started"), wxDefaultPosition,
                                    wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(lblTimeLeft, 0, wxALL, WXC_FROM_DIP(5));
 
-    auto finishTimeLabel = new wxStaticText(this, wxID_ANY, _("Finish time"), wxDefaultPosition,
+    auto finishTimeLabel = new wxStaticText(panel, wxID_ANY, _("Finish time"), wxDefaultPosition,
                                             wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(finishTimeLabel, 0, wxALL, WXC_FROM_DIP(5));
 
-    lblFinishTime = new wxStaticText(this, wxID_ANY, _("No print started"), wxDefaultPosition,
+    lblFinishTime = new wxStaticText(panel, wxID_ANY, _("No print started"), wxDefaultPosition,
                                      wxDLG_UNIT(this, wxSize(-1, -1)), 0);
 
     printStatusContentSizer->Add(lblFinishTime, 0, wxALL, WXC_FROM_DIP(5));
 
-    auto fileLabel = new wxStaticText(this, wxID_ANY, _("File"), wxDefaultPosition,
+    auto fileLabel = new wxStaticText(panel, wxID_ANY, _("File"), wxDefaultPosition,
                                       wxDLG_UNIT(this, wxSize(-1, -1)),
                                       0);
 
     printStatusContentSizer->Add(fileLabel, 0, wxALL, WXC_FROM_DIP(5));
 
-    lblFile = new wxStaticText(this, wxID_ANY, _("No print started"), wxDefaultPosition,
+    lblFile = new wxStaticText(panel, wxID_ANY, _("No print started"), wxDefaultPosition,
                                wxDLG_UNIT(this, wxSize(100, -1)), wxST_ELLIPSIZE_END | wxST_NO_AUTORESIZE);
 
     printStatusContentSizer->Add(lblFile, 0, wxALL, WXC_FROM_DIP(5));
 
-    nbContent = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), wxBK_DEFAULT);
+    nbContent = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), wxBK_DEFAULT);
     nbContent->SetName(wxT("nbContent"));
 
     contentSizer->Add(nbContent, 1, wxALL | wxEXPAND | wxALIGN_TOP, WXC_FROM_DIP(5));
@@ -283,7 +278,7 @@ void OctoprintSpoolDataViewListModel::Fill(std::vector<OctoprintSpool *> data, i
 
     selectedSpool = *std::find_if(items.begin(), items.end(), [&](const auto &item) {
         return item->databaseId == selectedDatabaseId;
-    }).base();
+    });
 }
 
 OctoprintSpoolDataViewListModel::OctoprintSpoolDataViewListModel() : wxDataViewModel(),

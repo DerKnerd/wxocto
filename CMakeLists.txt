@@ -25,18 +25,27 @@ conan_cmake_configure(
     REQUIRES
     easyhttpcpp/2.1.0
     nlohmann_json/3.10.2
-    GENERATORS cmake_find_package
+        expat/2.4.1
+        GENERATORS cmake_find_package
 )
 
 conan_cmake_autodetect(settings)
 
+if (WIN32)
+    set(target WIN32)
+    set(options Poco:enable_netssl_win=True Poco:enable_netssl=False)
+endif ()
+
 conan_cmake_install(PATH_OR_REFERENCE .
         BUILD missing
         REMOTE conancenter
-        SETTINGS ${settings})
+        SETTINGS ${settings}
+        OPTIONS ${options})
 
+find_package(expat)
 find_package(easyhttpcppeasyhttp)
 find_package(nlohmann_json)
 
-add_executable(wxocto main.cpp mainwindow/MainWindowBase.cpp mainwindow/MainWindowBase.h mainwindow/MainWindow.cpp mainwindow/MainWindow.h MainApp.cpp MainApp.h settings/wxOctoSettings.h settings/OctoPrintServerSettingsPage.cpp settings/OctoPrintServerSettingsPage.h settings/OctoPrintServerSettingsPagePanel.cpp settings/OctoPrintServerSettingsPagePanel.h helper.h octoprint/OctoprintFile.cpp octoprint/OctoprintFile.h octoprint/FetchFilesThread.cpp octoprint/FetchFilesThread.h octoprint/OctoprintJob.cpp octoprint/OctoprintJob.h octoprint/FetchPrintStatusThread.cpp octoprint/FetchPrintStatusThread.h octoprint/OctoApiEventIds.h octoprint/SelectAndPrintFileThread.cpp octoprint/SelectAndPrintFileThread.h octoprint/CancelPrintThread.cpp octoprint/CancelPrintThread.h octoprint/PausePrintThread.cpp octoprint/PausePrintThread.h octoprint/ResumePrintThread.cpp octoprint/ResumePrintThread.h octoprint/spoolmanager/FetchSpoolsThread.cpp octoprint/spoolmanager/FetchSpoolsThread.h octoprint/spoolmanager/OctoprintSpool.cpp octoprint/spoolmanager/OctoprintSpool.h octoprint/spoolmanager/OctoprintSpoolData.cpp octoprint/spoolmanager/OctoprintSpoolData.h spoolmanager/SpoolDialogBase.cpp spoolmanager/SpoolDialogBase.h spoolmanager/AddSpoolDialog.cpp spoolmanager/AddSpoolDialog.h spoolmanager/EditSpoolDialog.cpp spoolmanager/EditSpoolDialog.h)
-target_link_libraries(wxocto ${wxWidgets_LIBRARIES} easyhttpcppeasyhttp::easyhttpcppeasyhttp nlohmann_json::nlohmann_json)
+add_executable(wxocto ${target} main.cpp mainwindow/MainWindowBase.cpp mainwindow/MainWindowBase.h mainwindow/MainWindow.cpp mainwindow/MainWindow.h MainApp.cpp MainApp.h settings/wxOctoSettings.h settings/OctoPrintServerSettingsPage.cpp settings/OctoPrintServerSettingsPage.h settings/OctoPrintServerSettingsPagePanel.cpp settings/OctoPrintServerSettingsPagePanel.h helper.h octoprint/OctoprintFile.cpp octoprint/OctoprintFile.h octoprint/FetchFilesThread.cpp octoprint/FetchFilesThread.h octoprint/OctoprintJob.cpp octoprint/OctoprintJob.h octoprint/FetchPrintStatusThread.cpp octoprint/FetchPrintStatusThread.h octoprint/OctoApiEventIds.h octoprint/SelectAndPrintFileThread.cpp octoprint/SelectAndPrintFileThread.h octoprint/CancelPrintThread.cpp octoprint/CancelPrintThread.h octoprint/PausePrintThread.cpp octoprint/PausePrintThread.h octoprint/ResumePrintThread.cpp octoprint/ResumePrintThread.h octoprint/spoolmanager/FetchSpoolsThread.cpp octoprint/spoolmanager/FetchSpoolsThread.h octoprint/spoolmanager/OctoprintSpool.cpp octoprint/spoolmanager/OctoprintSpool.h octoprint/spoolmanager/OctoprintSpoolData.cpp octoprint/spoolmanager/OctoprintSpoolData.h spoolmanager/SpoolDialogBase.cpp spoolmanager/SpoolDialogBase.h spoolmanager/AddSpoolDialog.cpp spoolmanager/AddSpoolDialog.h spoolmanager/EditSpoolDialog.cpp spoolmanager/EditSpoolDialog.h)
+target_include_directories(wxocto PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(wxocto expat::expat ${wxWidgets_LIBRARIES} easyhttpcppeasyhttp::easyhttpcppeasyhttp nlohmann_json::nlohmann_json)

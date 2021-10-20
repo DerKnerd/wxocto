@@ -4,6 +4,7 @@
 
 #include <iomanip>
 #include "OctoprintSpool.h"
+#include <sstream>
 
 wxString OctoprintSpool::getPurchasedOn() const {
     return purchasedOn.Format();

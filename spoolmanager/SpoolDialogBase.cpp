@@ -153,8 +153,8 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title)
     dialogSizer->Add(staticBoxesSizer);
 
     auto dialogButtonSizer = CreateStdDialogButtonSizer(wxAPPLY | wxCLOSE);
+    dialogSizer->Add(dialogButtonSizer, 1, wxGROW | wxALL, 5);
     this->SetSizerAndFit(dialogSizer);
-    GetSizer()->Add(dialogButtonSizer, 0, wxGROW | wxALL, 5);
     auto applyButton = dialogButtonSizer->GetApplyButton();
     applyButton->SetLabel(_("Save spool"));
 
