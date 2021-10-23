@@ -46,6 +46,8 @@ private:
 
     void handleSpoolsFetchError(wxThreadEvent &event);
 
+    void handleSpoolSaved(wxWindowModalDialogEvent &event);
+
     void handleTimer(wxTimerEvent &event);
 
     void handlePrintStartError(wxThreadEvent &event);
@@ -54,7 +56,7 @@ private:
 
     void handlePausePrintDialogClosed(wxWindowModalDialogEvent &event);
 
-    OctoprintSpoolData data;
+    OctoprintSpoolData octoprintSpoolData;
 
 public:
     void handleResumePrint(wxCommandEvent &event) override;
@@ -74,8 +76,6 @@ public:
     MainWindow();
 
     void reloadSettings();
-
-    void handleSelectSpool(wxCommandEvent &event) override;
 };
 
 

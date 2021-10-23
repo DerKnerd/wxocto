@@ -8,9 +8,10 @@
 #include "../MainApp.h"
 #include "../helper.h"
 
-MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1280, 600),
+MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1600, 900),
                                            wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
                                    spoolListModel(new OctoprintSpoolDataViewListModel()) {
+    SetMinClientSize(wxSize(1280, 600));
     auto panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
     statusBar = CreateStatusBar();
 
@@ -37,8 +38,6 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
                      nullptr);
     toolbar->AddTool(MainWindowActions::DeleteSpool, _("Delete spool"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
                      "", nullptr);
-    toolbar->AddTool(MainWindowActions::SelectSpool, _("Select spool"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
-                     "", nullptr);
 
     toolbar->Realize();
 
@@ -60,7 +59,6 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     spoolsMenu->Append(MainWindowActions::AddSpool, _("Add spool"));
     spoolsMenu->Append(MainWindowActions::EditSpool, _("Edit spool"));
     spoolsMenu->Append(MainWindowActions::DeleteSpool, _("Delete spool"));
-    spoolsMenu->Append(MainWindowActions::SelectSpool, _("Select spool"));
 
     menuBar->Append(fileMenu, "File");
     menuBar->Append(printingMenu, "Printing");
@@ -79,7 +77,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
 
     auto printStatusContentSizer = new wxFlexGridSizer(0, 2, 0, 0);
     printStatusContentSizer->SetFlexibleDirection(wxBOTH);
-    printStatusContentSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    printStatusContentSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_ALL);
 
     printStatusSizer->Add(printStatusContentSizer, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
 
@@ -93,7 +91,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     prgPrintProgress->SetValue(0);
 
     printStatusContentSizer->Add(prgPrintProgress, 0, wxALL | wxALIGN_CENTER, WXC_FROM_DIP(5));
-    prgPrintProgress->SetMinSize(wxSize(200, -1));
+    prgPrintProgress->SetMinSize(wxSize(300, -1));
 
     auto timeElapsedLabel = new wxStaticText(panel, wxID_ANY, _("Time elapsed"), wxDefaultPosition,
                                              wxDLG_UNIT(this, wxSize(-1, -1)), 0);
@@ -135,6 +133,16 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
                                wxDLG_UNIT(this, wxSize(100, -1)), wxST_ELLIPSIZE_END | wxST_NO_AUTORESIZE);
 
     printStatusContentSizer->Add(lblFile, 0, wxALL, WXC_FROM_DIP(5));
+
+    auto selectedSpoolLabel = new wxStaticText(panel, wxID_ANY, _("Selected spool"), wxDefaultPosition,
+                                               wxDLG_UNIT(this, wxSize(-1, -1)),
+                                               0);
+
+    printStatusContentSizer->Add(selectedSpoolLabel, 0, wxALL, WXC_FROM_DIP(5));
+
+    selectedSpoolChoice = new wxChoice(panel, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
+
+    printStatusContentSizer->Add(selectedSpoolChoice, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
 
     nbContent = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), wxBK_DEFAULT);
     nbContent->SetName(wxT("nbContent"));
@@ -230,7 +238,6 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     Bind(wxEVT_MENU, &MainWindowBase::handleAddSpool, this, AddSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
-    Bind(wxEVT_MENU, &MainWindowBase::handleSelectSpool, this, SelectSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
 }
 

@@ -106,6 +106,8 @@ protected:
     wxStaticText *lblTimeLeft;
     wxStaticText *lblFinishTime;
     wxStaticText *lblFile;
+    wxChoice *selectedSpoolChoice;
+
     wxNotebook *nbContent;
     wxPanel *nbpFiles;
     wxTreeListCtrl *tlcFiles;
@@ -133,8 +135,6 @@ public:
     virtual void handleEditSpool(wxCommandEvent &event) = 0;
 
     virtual void handleDeleteSpool(wxCommandEvent &event) = 0;
-
-    virtual void handleSelectSpool(wxCommandEvent &event) = 0;
 
     virtual void handleStartPrint(wxCommandEvent &event) = 0;
 

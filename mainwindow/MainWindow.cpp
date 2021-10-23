@@ -32,6 +32,8 @@ MainWindow::MainWindow() : MainWindowBase() {
 
     Bind(wxEVT_THREAD, &MainWindow::handlePrintStartError, this, OctoApiEventId::OctoPrintStartError);
 
+    Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleSpoolSaved, this);
+
     Bind(wxEVT_TIMER, &MainWindow::handleTimer, this);
 
     pollOctoTimer = new wxTimer(this);
@@ -176,9 +178,6 @@ void MainWindow::handleEditSpool(wxCommandEvent &event) {
 void MainWindow::handleDeleteSpool(wxCommandEvent &event) {
 }
 
-void MainWindow::handleSelectSpool(wxCommandEvent &event) {
-}
-
 void MainWindow::handlePrinterSettings(wxCommandEvent &event) {
     MainApp::getInstance()->ShowPreferencesEditor(this);
 }
@@ -244,19 +243,34 @@ void MainWindow::handlePausePrintDialogClosed(wxWindowModalDialogEvent &event) {
 }
 
 void MainWindow::handleSpoolsFetched(wxThreadEvent &event) {
-    data = event.GetPayload<OctoprintSpoolData>();
-    spoolListModel->Fill(data.spools, data.selectedSpool);
+    octoprintSpoolData = event.GetPayload<OctoprintSpoolData>();
+    spoolListModel->Fill(octoprintSpoolData.spools, octoprintSpoolData.selectedSpool);
     dvlSpools->AssociateModel(spoolListModel.get());
-    vendors = data.vendors;
-    materials = data.materials;
+    vendors = octoprintSpoolData.vendors;
+    materials = octoprintSpoolData.materials;
+    selectedSpoolChoice->Clear();
+    auto foundSpool = false;
+    selectedSpoolChoice->Append(_("No spool"));
+    for (const auto &item: octoprintSpoolData.spools) {
+        selectedSpoolChoice->Append(item->displayName, item);
+        if (item->databaseId == octoprintSpoolData.selectedSpool) {
+            selectedSpool = *item;
+            foundSpool = true;
+        }
+    }
 
-    auto spool = wxDataViewItem(spoolListModel->getSelectedItem());
-    auto item = wxDataViewItem(spool);
-    if (item.IsOk()) {
-        dvlSpools->SetCurrentItem(item);
+    if (foundSpool) {
+        selectedSpoolChoice->SetStringSelection(selectedSpool.displayName);
+    } else {
+        selectedSpoolChoice->SetSelection(0);
     }
 }
 
 void MainWindow::handleSpoolsFetchError(wxThreadEvent &event) {
     wxLogStatus(_("Failed to fetch spools"));
+}
+
+void MainWindow::handleSpoolSaved(wxWindowModalDialogEvent &event) {
+    auto fetchSpools = new FetchSpoolsThread(this);
+    fetchSpools->Run();
 }
