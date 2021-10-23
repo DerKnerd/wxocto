@@ -20,7 +20,12 @@
 
 class SpoolDialogBase : public wxDialog {
 public:
-    explicit SpoolDialogBase(wxWindow *parent, const wxString &title);
+    explicit SpoolDialogBase(wxWindow *parent, const wxString &title, int winid);
+
+    enum SpoolDialogId {
+        AddSpoolDialog = 1,
+        EditSpoolDialog,
+    };
 
 protected:
     // Filament information
@@ -51,9 +56,16 @@ protected:
 
 private:
     long databaseId = -1;
+    long version = 1;
+    wxDateTime lastUse;
+    wxDateTime firstUse;
 
 public:
     void setSpool(OctoprintSpool *spool);
+
+    void setMaterials(const std::vector<wxString> &materials);
+
+    void setVendors(const std::vector<wxString> &vendors);
 
     [[nodiscard]] OctoprintSpool getSpool() const;
 };

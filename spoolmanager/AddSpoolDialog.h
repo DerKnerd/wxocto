@@ -14,6 +14,10 @@ public:
 
 protected:
     void handleSave(wxCommandEvent &event) override;
+
+    void handleSpoolSaved(wxThreadEvent &event);
+
+    void handleSpoolSaveError(wxThreadEvent &event);
 };
 
 

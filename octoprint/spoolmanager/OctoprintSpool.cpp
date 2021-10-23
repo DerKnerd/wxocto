@@ -18,6 +18,9 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
     if (json["databaseId"].is_number()) {
         spool->databaseId = json["databaseId"];
     }
+    if (json["version"].is_number()) {
+        spool->version = json["version"];
+    }
     if (json["displayName"].is_string()) {
         spool->displayName = wxString::FromUTF8(json["displayName"]);
     }
@@ -82,6 +85,11 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
         spool->lastUsed = wxDateTime();
         spool->lastUsed.ParseDate(lastUsed);
     }
+    if (json["firstUse"].is_string()) {
+        std::string firstUsed = json["firstUse"];
+        spool->firstUsed = wxDateTime();
+        spool->firstUsed.ParseDate(firstUsed);
+    }
 
     return spool;
 }
@@ -105,4 +113,37 @@ wxString OctoprintSpool::getTotalLength() const {
     ss << std::fixed << std::setprecision(2) << totalLength;
 
     return ss.str();
+}
+
+nlohmann::json OctoprintSpool::toJson() {
+    nlohmann::json json = {
+            {"displayName",       displayName.ToStdString()},
+            {"colorName",         colorName.ToStdString()},
+            {"color",             color.ToStdString()},
+            {"vendor",            vendor.ToStdString()},
+            {"version",           version},
+            {"material",          material.ToStdString()},
+            {"density",           density},
+            {"diameter",          diameter},
+            {"diameterTolerance", tolerance},
+            {"temperature",       temperatureTool},
+            {"bedTemperature",    temperatureBed},
+            {"totalWeight",       std::stod(totalWeight.ToStdString())},
+            {"usedWeight",        std::stod(usedWeight.ToStdString())},
+            {"spoolWeight",       std::stod(spoolWeight.ToStdString())},
+            {"totalLength",       totalLength},
+            {"usedLength",        usedLength},
+            {"purchasedFrom",     purchasedFrom.ToStdString()},
+            {"cost",              cost},
+            {"purchasedOn",       purchasedOn.Format("%d.%m.%Y").ToStdString()},
+            {"labels",            std::vector<std::string>()},
+    };
+    if (lastUsed.IsValid()) {
+        json["lastUse"] = lastUsed.Format("%d.%m.%Y").ToStdString();
+    }
+    if (firstUsed.IsValid()) {
+        json["firstUse"] = firstUsed.Format("%d.%m.%Y").ToStdString();
+    }
+
+    return json;
 }

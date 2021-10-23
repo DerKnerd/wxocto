@@ -160,12 +160,16 @@ void MainWindow::handleTimer(wxTimerEvent &event) {
 
 void MainWindow::handleAddSpool(wxCommandEvent &event) {
     auto dialog = new AddSpoolDialog(this);
+    dialog->setMaterials(materials);
+    dialog->setVendors(vendors);
     dialog->ShowWindowModal();
 }
 
 void MainWindow::handleEditSpool(wxCommandEvent &event) {
     auto dialog = new EditSpoolDialog(this);
     dialog->setSpool((OctoprintSpool *) dvlSpools->GetSelection().GetID());
+    dialog->setMaterials(materials);
+    dialog->setVendors(vendors);
     dialog->ShowWindowModal();
 }
 
@@ -243,6 +247,8 @@ void MainWindow::handleSpoolsFetched(wxThreadEvent &event) {
     data = event.GetPayload<OctoprintSpoolData>();
     spoolListModel->Fill(data.spools, data.selectedSpool);
     dvlSpools->AssociateModel(spoolListModel.get());
+    vendors = data.vendors;
+    materials = data.materials;
 
     auto spool = wxDataViewItem(spoolListModel->getSelectedItem());
     auto item = wxDataViewItem(spool);

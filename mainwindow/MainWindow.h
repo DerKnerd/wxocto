@@ -21,6 +21,8 @@ private:
     wxTimer *pollOctoTimer;
     FetchPrintStatusThread *statusThread = nullptr;
     OctoprintJob currentJob;
+    std::vector<wxString> vendors;
+    std::vector<wxString> materials;
 
     void handleShow(wxShowEvent &event);
 

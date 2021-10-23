@@ -71,7 +71,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     contentSizer->AddGrowableRow(0);
     contentSizer->AddGrowableCol(1);
 
-    this->SetSizer(contentSizer);
+    panel->SetSizer(contentSizer);
 
     auto printStatusSizer = new wxStaticBoxSizer(new wxStaticBox(panel, wxID_ANY, _("Status")), wxVERTICAL);
 
@@ -205,7 +205,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     SetName("MainWindowBase");
     SetSize(wxDLG_UNIT(this, wxSize(-1, -1)));
     if (GetSizer()) {
-        GetSizer()->Fit(this);
+        GetSizer()->Fit(panel);
     }
     if (GetParent()) {
         CentreOnParent(wxBOTH);

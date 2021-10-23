@@ -12,7 +12,8 @@
 
 class OctoprintSpool {
 public:
-    long databaseId;
+    long databaseId = -1;
+    long version = 1;
 
     wxString displayName;
     wxString colorName;
@@ -35,9 +36,9 @@ public:
 
     wxString purchasedFrom;
     double cost;
-    wxString costUnit;
     wxDateTime purchasedOn;
     wxDateTime lastUsed;
+    wxDateTime firstUsed;
 
     [[nodiscard]] wxString getPurchasedOn() const;
 
@@ -48,6 +49,8 @@ public:
     [[nodiscard]] wxString getTotalLength() const;
 
     static OctoprintSpool *fromJson(const nlohmann::json &json);
+
+    nlohmann::json toJson();
 };
 
 

@@ -12,6 +12,8 @@ class OctoprintSpoolData {
 public:
     std::vector<OctoprintSpool*> spools;
     int selectedSpool;
+    std::vector<wxString> materials;
+    std::vector<wxString> vendors;
 };
 
 

@@ -1,21 +1,23 @@
 //
-// Created by imanuel on 10.10.21.
+// Created by imanuel on 23.10.21.
 //
 
-#include <easyhttpcpp/Request.h>
 #include <easyhttpcpp/EasyHttp.h>
-#include "ResumePrintThread.h"
-#include "../MainApp.h"
-#include "OctoApiEventIds.h"
 
-void *ResumePrintThread::Entry() {
+#include <utility>
+#include "SaveSpoolThread.h"
+#include "../../MainApp.h"
+#include "../OctoApiEventIds.h"
+
+void *SaveSpoolThread::Entry() {
     auto settings = MainApp::getInstance()->GetSettings();
     auto body = easyhttpcpp::RequestBody::create(
             easyhttpcpp::MediaType::Ptr(new easyhttpcpp::MediaType("application/json")),
-            Poco::makeShared<std::string>(R"({"command": "pause", "action": "resume"})"));
+            Poco::makeShared<std::string>(spool.dump()));
+    auto purchasedOn = spool.dump();
     auto request = easyhttpcpp::Request::Builder()
-            .httpPost(body)
-            .setUrl(settings.server + "/api/job")
+            .httpPut(body)
+            .setUrl(settings.server + "/plugin/SpoolManager/saveSpool")
             .setHeader("X-Api-Key", settings.apiKey)
             .build();
 
@@ -23,9 +25,10 @@ void *ResumePrintThread::Entry() {
         auto httpClient = easyhttpcpp::EasyHttp::Builder().build();
         auto call = httpClient->newCall(request);
         auto response = call->execute();
-        if (response->isSuccessful() && response->getCode() == 204) {
+        if (response->isSuccessful() && response->getCode() == 200) {
             auto event = new wxThreadEvent();
-            event->SetId(OctoApiEventId::OctoPrintResumed);
+            auto errorData = response->getBody()->toString();
+            event->SetId(OctoApiEventId::OctoPrintSpoolManagerSaved);
             wxQueueEvent(parent, event);
         } else {
             throw std::exception();
@@ -33,11 +36,11 @@ void *ResumePrintThread::Entry() {
     } catch (const std::exception &e) {
         auto event = new wxThreadEvent();
         event->SetPayload(e);
-        event->SetId(OctoApiEventId::OctoPrintResumeError);
+        event->SetId(OctoApiEventId::OctoPrintSpoolManagerSaveError);
         wxQueueEvent(parent, event);
     }
 
     return nullptr;
 }
 
-ResumePrintThread::ResumePrintThread(wxWindow *parent) : wxThread(wxThreadKind::wxTHREAD_DETACHED), parent(parent) {}
+SaveSpoolThread::SaveSpoolThread(wxWindow *parent, nlohmann::json spool) : parent(parent), spool(std::move(spool)) {}

@@ -32,14 +32,24 @@ void *FetchSpoolsThread::Entry() {
                 break;
             }
 
-            auto spools = std::vector<OctoprintSpool*>();
-            for (const auto &item: jsonBody["allSpools"]) {
-                auto spool = OctoprintSpool::fromJson(item);
-                spools.push_back(spool);
-            }
-
             spoolData.selectedSpool = selectedSpoolId;
-            spoolData.spools = spools;
+            spoolData.materials = std::vector<wxString>();
+            spoolData.vendors = std::vector<wxString>();
+            spoolData.spools = std::vector<OctoprintSpool *>();
+
+            auto spools = jsonBody["allSpools"].get<std::vector<nlohmann::json>>();
+            auto materials = jsonBody["catalogs"]["materials"].get<std::vector<nlohmann::json>>();
+            auto vendors = jsonBody["catalogs"]["vendors"].get<std::vector<nlohmann::json>>();
+
+            for (const auto &item: spools) {
+                spoolData.spools.emplace_back(OctoprintSpool::fromJson(item));
+            }
+            for (const auto &item: materials) {
+                spoolData.materials.emplace_back(wxString::FromUTF8(item));
+            }
+            for (const auto &item: vendors) {
+                spoolData.vendors.emplace_back(wxString::FromUTF8(item));
+            }
 
             auto event = new wxThreadEvent();
             event->SetPayload(spoolData);

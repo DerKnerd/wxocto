@@ -4,8 +4,8 @@
 
 #include "SpoolDialogBase.h"
 
-SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title)
-        : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxSize(-1, -1), wxDEFAULT_DIALOG_STYLE,
+SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int winid)
+        : wxDialog(parent, winid, title, wxDefaultPosition, wxSize(-1, -1), wxDEFAULT_DIALOG_STYLE,
                    wxASCII_STR(wxDialogNameStr)) {
     auto dialogSizer = new wxBoxSizer(wxVERTICAL);
     auto staticBoxesSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -184,13 +184,16 @@ void SpoolDialogBase::setSpool(OctoprintSpool *spool) {
     purchasedOn->SetValue(spool->purchasedOn);
 
     databaseId = spool->databaseId;
+    version = spool->version;
+    firstUse = spool->firstUsed;
+    lastUse = spool->lastUsed;
 }
 
 OctoprintSpool SpoolDialogBase::getSpool() const {
     auto spool = OctoprintSpool();
     spool.displayName = displayName->GetValue();
     spool.colorName = colorName->GetValue();
-    spool.color = colorPicker->GetColour().GetAsString();
+    spool.color = colorPicker->GetColour().GetAsString(wxC2S_HTML_SYNTAX);
     spool.vendor = vendor->GetValue();
     spool.material = material->GetValue();
     spool.density = density->GetValue();
@@ -207,6 +210,17 @@ OctoprintSpool SpoolDialogBase::getSpool() const {
     spool.cost = cost->GetValue();
     spool.purchasedOn = purchasedOn->GetValue();
     spool.databaseId = databaseId;
+    spool.version = version;
+    spool.firstUsed = firstUse;
+    spool.lastUsed = lastUse;
 
     return spool;
+}
+
+void SpoolDialogBase::setVendors(const std::vector<wxString> &vendors) {
+    vendor->Append(vendors);
+}
+
+void SpoolDialogBase::setMaterials(const std::vector<wxString> &materials) {
+    material->Append(materials);
 }
