@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 3.20)
 project(wxocto CXX)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(BUILD_SHARED_LIBS false)
 
+include(./ucm.cmake)
+
+ucm_set_runtime(STATIC)
 if (WIN32 OR MINGW)
     set(target WIN32)
     set(options Poco:enable_netssl_win=True Poco:enable_netssl=False)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(BUILD_SHARED_LIBS false)
+    set(CONAN_SETTINGS compiler.runtime=MT)
 endif ()
 
 # Request the required wxWidgets libs
@@ -36,7 +40,7 @@ conan_cmake_install(PATH_OR_REFERENCE .
         BUILD missing
         REMOTE conancenter
         SETTINGS ${settings}
-        SETTINGS compiler.runtime=MT
+        SETTINGS ${CONAN_SETTINGS}
         OPTIONS ${options})
 
 find_package(expat)

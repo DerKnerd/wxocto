@@ -23,6 +23,7 @@
 #include <utility>
 #include "../octoprint/OctoprintFile.h"
 #include "../octoprint/spoolmanager/OctoprintSpool.h"
+#include "../wxocto.xpm"
 
 enum MainWindowActions {
     StartPrint = 200,
