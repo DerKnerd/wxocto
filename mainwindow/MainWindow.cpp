@@ -87,7 +87,7 @@ void MainWindow::fillFileTree(wxTreeListItem parent, const std::vector<Octoprint
         tlcFiles->SetItemText(treeItem, FileListColumns::ColFileSize, file.getSize());
         tlcFiles->SetItemText(treeItem, FileListColumns::ColFileFullPath, file.path);
         if (file.type == OctoprintFile::File) {
-            auto uploaded = new wxDateTime((double) file.uploaded);
+            auto uploaded = new wxDateTime(file.uploaded);
             if (uploaded->IsValid()) {
                 tlcFiles->SetItemText(treeItem, FileListColumns::ColFileUploaded, uploaded->Format());
             }

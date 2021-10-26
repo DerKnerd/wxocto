@@ -8,6 +8,7 @@ set(BUILD_SHARED_LIBS false)
 if (WIN32 OR MINGW)
     set(target WIN32)
     set(options Poco:enable_netssl_win=True Poco:enable_netssl=False)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 endif ()
 
 # Request the required wxWidgets libs
@@ -35,6 +36,7 @@ conan_cmake_install(PATH_OR_REFERENCE .
         BUILD missing
         REMOTE conancenter
         SETTINGS ${settings}
+        SETTINGS compiler.runtime=MT
         OPTIONS ${options})
 
 find_package(expat)

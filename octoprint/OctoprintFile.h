@@ -20,7 +20,7 @@ public:
     wxString name;
     wxString path;
     long size = 0L;
-    long uploaded = 0L;
+    time_t uploaded = 0;
     double depth = 0.0;
     double height = 0.0;
     double width = 0.0;
