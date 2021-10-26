@@ -47,7 +47,7 @@ wxString OctoprintFile::getDimensions() const {
     }
 
     auto ss = std::wstringstream();
-    ss << std::fixed << std::setprecision(2) << width << L"mm × " << height << L"mm × " << depth << L"mm";
+    ss << std::fixed << std::setprecision(2) << width << L"mm \u00D7 " << height << L"mm \u00D7 " << depth << L"mm";
 
     return ss.str();
 }

@@ -66,8 +66,8 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     auto weightAndLengthInformationSizer = new wxStaticBoxSizer(
             new wxStaticBox(this, wxID_ANY, _("Weight and length information")), wxVERTICAL);
     auto weightAndLengthInformationContentSizer = new wxFlexGridSizer(2);
-    auto temperatureToolLabel = new wxStaticText(this, wxID_ANY, _(L"Tool temperature (°C)"));
-    auto temperatureBedLabel = new wxStaticText(this, wxID_ANY, _(L"Bed temperature (°C)"));
+    auto temperatureToolLabel = new wxStaticText(this, wxID_ANY, _(L"Tool temperature (\u00B0C)"));
+    auto temperatureBedLabel = new wxStaticText(this, wxID_ANY, _(L"Bed temperature (\u00B0C)"));
     auto totalWeightLabel = new wxStaticText(this, wxID_ANY, _("Total weight (g)"));
     auto usedWeightLabel = new wxStaticText(this, wxID_ANY, _("Used weight (g)"));
     auto spoolWeightLabel = new wxStaticText(this, wxID_ANY, _("Spool weight (g)"));

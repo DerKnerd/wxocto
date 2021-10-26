@@ -7,7 +7,11 @@
 #include <sstream>
 
 wxString OctoprintSpool::getPurchasedOn() const {
-    return purchasedOn.Format();
+    if (purchasedOn.IsValid()) {
+        return purchasedOn.Format();
+    }
+
+    return "";
 }
 
 OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
@@ -98,7 +102,7 @@ wxString OctoprintSpool::getLastUsed() const {
     if (!lastUsed.IsValid()) {
         return "";
     }
-    return lastUsed.Format().ToStdString();
+    return lastUsed.Format();
 }
 
 wxString OctoprintSpool::getUsedLength() const {
@@ -135,11 +139,13 @@ nlohmann::json OctoprintSpool::toJson() {
             {"usedLength",        usedLength},
             {"purchasedFrom",     purchasedFrom.ToStdString()},
             {"cost",              cost},
-            {"purchasedOn",       purchasedOn.Format("%d.%m.%Y").ToStdString()},
             {"labels",            std::vector<std::string>()},
     };
     if (lastUsed.IsValid()) {
         json["lastUse"] = lastUsed.Format("%d.%m.%Y").ToStdString();
+    }
+    if (purchasedOn.IsValid()) {
+        json["purchasedOn"] = purchasedOn.Format("%d.%m.%Y").ToStdString();
     }
     if (firstUsed.IsValid()) {
         json["firstUse"] = firstUsed.Format("%d.%m.%Y").ToStdString();

@@ -89,12 +89,9 @@ public:
 
     [[nodiscard]] bool IsContainer(const wxDataViewItem &item) const override;
 
-    void Fill(std::vector<OctoprintSpool *> data, int selectedDatabaseId);
-
-    [[nodiscard]] wxDataViewItem getSelectedItem() const;
+    void Fill(const std::vector<OctoprintSpool *> &data);
 
     std::vector<OctoprintSpool *> items;
-    OctoprintSpool *selectedSpool;
 };
 
 class MainWindowBase : public wxFrame {
@@ -114,7 +111,7 @@ protected:
     wxPanel *nbpSpools;
     wxDataViewListCtrl *dvlSpools;
     wxStatusBar *statusBar;
-    wxObjectDataPtr<OctoprintSpoolDataViewListModel> spoolListModel;
+    OctoprintSpoolDataViewListModel *spoolListModel;
     OctoprintSpool selectedSpool;
 
 protected:

@@ -11,6 +11,7 @@
 MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDefaultPosition, wxSize(1600, 900),
                                            wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
                                    spoolListModel(new OctoprintSpoolDataViewListModel()) {
+    SetIcon(wxICON(wxocto));
     SetMinClientSize(wxSize(1280, 600));
     auto panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
     statusBar = CreateStatusBar();
@@ -277,23 +278,18 @@ wxString OctoprintSpoolDataViewListModel::GetColumnType(unsigned int col) const 
     return "string";
 }
 
-void OctoprintSpoolDataViewListModel::Fill(std::vector<OctoprintSpool *> data, int selectedDatabaseId) {
+void OctoprintSpoolDataViewListModel::Fill(const std::vector<OctoprintSpool *> &data) {
     items.clear();
-    for (const auto &item: data) {
-        items.push_back(item);
-    }
 
-    selectedSpool = *std::find_if(items.begin(), items.end(), [&](const auto &item) {
-        return item->databaseId == selectedDatabaseId;
-    });
+    auto parent = wxDataViewItem(nullptr);
+    for (auto item: data) {
+        items.push_back(item);
+        ItemAdded(parent, wxDataViewItem(item));
+    }
 }
 
 OctoprintSpoolDataViewListModel::OctoprintSpoolDataViewListModel() : wxDataViewModel(),
                                                                      items(std::vector<OctoprintSpool *>()) {}
-
-wxDataViewItem OctoprintSpoolDataViewListModel::getSelectedItem() const {
-    return wxDataViewItem(selectedSpool);
-}
 
 unsigned int
 OctoprintSpoolDataViewListModel::GetChildren(const wxDataViewItem &item, wxDataViewItemArray &children) const {
@@ -383,5 +379,8 @@ wxDataViewItem OctoprintSpoolDataViewListModel::GetParent(const wxDataViewItem &
 }
 
 bool OctoprintSpoolDataViewListModel::IsContainer(const wxDataViewItem &item) const {
+    if (!item.IsOk())
+        return true;
+
     return false;
 }

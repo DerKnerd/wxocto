@@ -50,7 +50,11 @@ wxString OctoprintJob::getFinishTime() const {
     auto date = wxDateTime::Now();
     date += wxTimeSpan(hours, minutes, seconds);
 
-    return date.Format().ToStdString();
+    if (date.IsValid()) {
+        return date.Format();
+    } else {
+        return "No print started";
+    }
 }
 
 OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {

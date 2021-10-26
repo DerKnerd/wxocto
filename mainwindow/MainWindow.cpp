@@ -38,6 +38,7 @@ MainWindow::MainWindow() : MainWindowBase() {
 
     pollOctoTimer = new wxTimer(this);
     pollOctoTimer->Start(500);
+    spoolListModel = new OctoprintSpoolDataViewListModel();
 }
 
 void MainWindow::setupEvents() {
@@ -87,7 +88,9 @@ void MainWindow::fillFileTree(wxTreeListItem parent, const std::vector<Octoprint
         tlcFiles->SetItemText(treeItem, FileListColumns::ColFileFullPath, file.path);
         if (file.type == OctoprintFile::File) {
             auto uploaded = new wxDateTime((double) file.uploaded);
-            tlcFiles->SetItemText(treeItem, FileListColumns::ColFileUploaded, uploaded->Format());
+            if (uploaded->IsValid()) {
+                tlcFiles->SetItemText(treeItem, FileListColumns::ColFileUploaded, uploaded->Format());
+            }
             tlcFiles->SetItemText(treeItem, FileListColumns::ColFileModelSize, file.getDimensions());
             auto ssFilamentUse = std::stringstream();
             ssFilamentUse << std::fixed << std::setprecision(2) << file.filamentLength / 1000 << "m";
@@ -244,8 +247,8 @@ void MainWindow::handlePausePrintDialogClosed(wxWindowModalDialogEvent &event) {
 
 void MainWindow::handleSpoolsFetched(wxThreadEvent &event) {
     octoprintSpoolData = event.GetPayload<OctoprintSpoolData>();
-    spoolListModel->Fill(octoprintSpoolData.spools, octoprintSpoolData.selectedSpool);
-    dvlSpools->AssociateModel(spoolListModel.get());
+    spoolListModel->Fill(octoprintSpoolData.spools);
+    dvlSpools->AssociateModel(spoolListModel);
     vendors = octoprintSpoolData.vendors;
     materials = octoprintSpoolData.materials;
     selectedSpoolChoice->Clear();
