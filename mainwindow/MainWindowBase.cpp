@@ -71,6 +71,8 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     contentSizer->AddGrowableCol(1);
 
     panel->SetSizer(contentSizer);
+    toolbar->EnableTool(MainWindowActions::DeleteSpool, false);
+    toolbar->EnableTool(MainWindowActions::EditSpool, false);
 
     auto printStatusSizer = new wxStaticBoxSizer(new wxStaticBox(panel, wxID_ANY, _("Status")), wxVERTICAL);
 
@@ -180,7 +182,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     auto dvlSpoolsSizer = new wxBoxSizer(wxVERTICAL);
     nbpSpools->SetSizer(dvlSpoolsSizer);
 
-    dvlSpools = new wxDataViewListCtrl(nbpSpools, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(nbpSpools, wxSize(-1, -1)),
+    dvlSpools = new wxDataViewListCtrl(nbpSpools, Spools, wxDefaultPosition, wxDLG_UNIT(nbpSpools, wxSize(-1, -1)),
                                        wxDV_ROW_LINES | wxDV_SINGLE);
 
     dvlSpoolsSizer->Add(dvlSpools, 1, wxALL | wxEXPAND, WXC_FROM_DIP(5));
@@ -240,6 +242,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
+    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &MainWindowBase::handleSpoolSelected, this, Spools);
 }
 
 MainWindowBase::~MainWindowBase() = default;

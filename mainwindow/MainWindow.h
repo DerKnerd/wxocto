@@ -18,6 +18,10 @@ protected:
     void setupEvents() override;
 
 private:
+public:
+    void handleSpoolSelected(wxDataViewEvent &event) override;
+
+private:
     wxTimer *pollOctoTimer;
     FetchPrintStatusThread *statusThread = nullptr;
     OctoprintJob currentJob;
@@ -46,6 +50,10 @@ private:
 
     void handleSpoolsFetchError(wxThreadEvent &event);
 
+    void handleSpoolsDeleted(wxThreadEvent &event);
+
+    void handleSpoolsDeleteError(wxThreadEvent &event);
+
     void handleSpoolSaved(wxWindowModalDialogEvent &event);
 
     void handleTimer(wxTimerEvent &event);
@@ -55,6 +63,8 @@ private:
     void handleCancelPrintDialogClosed(wxWindowModalDialogEvent &event);
 
     void handlePausePrintDialogClosed(wxWindowModalDialogEvent &event);
+
+    void handleDeleteSpoolDialog(wxWindowModalDialogEvent &event);
 
     OctoprintSpoolData octoprintSpoolData;
 

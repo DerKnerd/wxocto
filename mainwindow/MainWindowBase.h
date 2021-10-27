@@ -120,6 +120,10 @@ protected:
 
 public:
 
+    enum Controls {
+        Spools = 0,
+    };
+
     MainWindowBase();
 
     ~MainWindowBase() override;
@@ -141,6 +145,8 @@ public:
     virtual void handlePausePrint(wxCommandEvent &event) = 0;
 
     virtual void handleCancelPrint(wxCommandEvent &event) = 0;
+
+    virtual void handleSpoolSelected(wxDataViewEvent &event) = 0;
 };
 
 

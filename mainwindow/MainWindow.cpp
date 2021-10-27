@@ -12,6 +12,7 @@
 #include "../octoprint/spoolmanager/FetchSpoolsThread.h"
 #include "../spoolmanager/AddSpoolDialog.h"
 #include "../spoolmanager/EditSpoolDialog.h"
+#include "../octoprint/spoolmanager/DeleteSpoolThread.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
@@ -26,6 +27,10 @@ MainWindow::MainWindow() : MainWindowBase() {
     Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetched, this, OctoApiEventId::OctoPrintSpoolManagerSpoolsFetched);
     Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetchError, this,
          OctoApiEventId::OctoPrintSpoolManagerSpoolsFetchError);
+
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolsDeleted, this, OctoApiEventId::OctoPrintSpoolManagerSpoolDeleted);
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolsDeleteError, this,
+         OctoApiEventId::OctoPrintSpoolManagerSpoolDeleteError);
 
     Bind(wxEVT_THREAD, &MainWindow::handleJobFetched, this, OctoApiEventId::OctoJobFetched);
     Bind(wxEVT_THREAD, &MainWindow::handleJobFetchError, this, OctoApiEventId::OctoJobError);
@@ -179,6 +184,12 @@ void MainWindow::handleEditSpool(wxCommandEvent &event) {
 }
 
 void MainWindow::handleDeleteSpool(wxCommandEvent &event) {
+    auto dialog = new wxMessageDialog(this, _("Are you sure to delete the selected spool?"), _("Delete spool?"),
+                                      wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_WARNING);
+    dialog->SetYesNoLabels("Delete spool", "Keep spool");
+
+    dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleDeleteSpoolDialog, this);
+    dialog->ShowWindowModal();
 }
 
 void MainWindow::handlePrinterSettings(wxCommandEvent &event) {
@@ -276,4 +287,27 @@ void MainWindow::handleSpoolsFetchError(wxThreadEvent &event) {
 void MainWindow::handleSpoolSaved(wxWindowModalDialogEvent &event) {
     auto fetchSpools = new FetchSpoolsThread(this);
     fetchSpools->Run();
+}
+
+void MainWindow::handleDeleteSpoolDialog(wxWindowModalDialogEvent &event) {
+    auto selectedSpoolItem = dvlSpools->GetSelection();
+    auto selectedSpool = (OctoprintSpool *) (selectedSpoolItem.m_pItem);
+
+    auto deleteSpool = new DeleteSpoolThread(this, selectedSpool->databaseId);
+    deleteSpool->Run();
+}
+
+void MainWindow::handleSpoolSelected(wxDataViewEvent &event) {
+    auto item = event.GetItem();
+    toolbar->EnableTool(MainWindowActions::DeleteSpool, item.IsOk());
+    toolbar->EnableTool(MainWindowActions::EditSpool, item.IsOk());
+}
+
+void MainWindow::handleSpoolsDeleted(wxThreadEvent &event) {
+    auto fetchSpools = new FetchSpoolsThread(this);
+    fetchSpools->Run();
+}
+
+void MainWindow::handleSpoolsDeleteError(wxThreadEvent &event) {
+    wxMessageBox(_("Failed to delete the spool"));
 }
