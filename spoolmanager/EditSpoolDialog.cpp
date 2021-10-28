@@ -16,8 +16,8 @@ void EditSpoolDialog::handleSave(wxCommandEvent &event) {
 
 EditSpoolDialog::EditSpoolDialog(wxWindow *parent) : SpoolDialogBase(parent, _("Edit spool"),
                                                                      SpoolDialogBase::EditSpoolDialog) {
-    Bind(wxEVT_THREAD, &EditSpoolDialog::handleSpoolSaved, this, OctoApiEventId::OctoPrintSpoolManagerSaved);
-    Bind(wxEVT_THREAD, &EditSpoolDialog::handleSpoolSaveError, this, OctoApiEventId::OctoPrintSpoolManagerSaveError);
+    Bind(wxEVT_THREAD, &EditSpoolDialog::handleSpoolSaved, this, OctoApiEventId::OctoPrintSpoolManagerSpoolSaved);
+    Bind(wxEVT_THREAD, &EditSpoolDialog::handleSpoolSaveError, this, OctoApiEventId::OctoPrintSpoolManagerSpoolSaveError);
 }
 
 void EditSpoolDialog::handleSpoolSaved(wxThreadEvent &event) {

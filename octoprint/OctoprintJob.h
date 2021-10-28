@@ -30,6 +30,7 @@ public:
     wxString path;
     wxString origin;
     bool fileSelected;
+    double filamentLength;
 
     [[nodiscard]]wxString getTimeElapsed() const;
 

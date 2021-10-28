@@ -242,7 +242,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
-    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &MainWindowBase::handleSpoolSelected, this, Spools);
+    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &MainWindowBase::handleDvlSpoolsSelectionChanged, this, Spools);
 }
 
 MainWindowBase::~MainWindowBase() = default;
@@ -331,7 +331,7 @@ void OctoprintSpoolDataViewListModel::GetValue(wxVariant &variant, const wxDataV
             variant = spool->getUsedLength();
             break;
         case ColSpoolLengthLeft:
-            variant = spool->leftLength;
+            variant = spool->getLeftLength();
             break;
         default:
             wxFAIL;
@@ -367,7 +367,7 @@ bool OctoprintSpoolDataViewListModel::SetValue(const wxVariant &variant, const w
             spool->usedLength = variant;
             break;
         case ColSpoolLengthLeft:
-            spool->leftLength = variant.GetString();
+            spool->leftLength = variant;
             break;
         default:
             wxFAIL;

@@ -32,7 +32,7 @@ public:
     wxString leftWeight;
     double totalLength;
     double usedLength;
-    wxString leftLength;
+    double leftLength;
 
     wxString purchasedFrom;
     double cost;
@@ -47,6 +47,8 @@ public:
     [[nodiscard]] wxString getUsedLength() const;
 
     [[nodiscard]] wxString getTotalLength() const;
+
+    [[nodiscard]] wxString getLeftLength() const;
 
     static OctoprintSpool *fromJson(const nlohmann::json &json);
 

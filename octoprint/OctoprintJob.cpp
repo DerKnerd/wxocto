@@ -86,6 +86,15 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
                 job.origin = wxString::FromUTF8(jsonFile["origin"]);
             }
         }
+        job.filamentLength = 0;
+        if (!jsonJob["filament"].is_null()) {
+            auto jsonFilament = jsonJob["filament"];
+            if (jsonFilament["tool0"].is_null()) {
+                job.filamentLength = 0;
+            } else if (jsonFilament["tool0"]["length"].is_number()) {
+                job.filamentLength = jsonFilament["tool0"]["length"];
+            }
+        }
     } else {
         job.file = _("No print started");
         job.fileSelected = false;

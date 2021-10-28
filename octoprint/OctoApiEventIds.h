@@ -21,10 +21,12 @@ enum OctoApiEventId {
 
     OctoPrintSpoolManagerSpoolsFetched,
     OctoPrintSpoolManagerSpoolsFetchError,
-    OctoPrintSpoolManagerSaved,
-    OctoPrintSpoolManagerSaveError,
+    OctoPrintSpoolManagerSpoolSaved,
+    OctoPrintSpoolManagerSpoolSaveError,
     OctoPrintSpoolManagerSpoolDeleted,
-    OctoPrintSpoolManagerSpoolDeleteError
+    OctoPrintSpoolManagerSpoolDeleteError,
+    OctoPrintSpoolManagerSpoolSelected,
+    OctoPrintSpoolManagerSpoolSelectError
 };
 
 #endif //WXOCTO_OCTOAPIEVENTIDS_H

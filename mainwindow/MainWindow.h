@@ -13,13 +13,8 @@
 #include <wx/app.h>
 
 class MainWindow : public MainWindowBase {
-public:
 protected:
     void setupEvents() override;
-
-private:
-public:
-    void handleSpoolSelected(wxDataViewEvent &event) override;
 
 private:
     wxTimer *pollOctoTimer;
@@ -33,9 +28,6 @@ private:
     void updateView();
 
     void fillFileTree(wxTreeListItem parent, const std::vector<OctoprintFile> &files);
-
-public:
-    void handleStartPrint(wxCommandEvent &event) override;
 
 private:
     void handleFilesFetched(wxThreadEvent &event);
@@ -55,6 +47,10 @@ private:
     void handleSpoolsDeleteError(wxThreadEvent &event);
 
     void handleSpoolSaved(wxWindowModalDialogEvent &event);
+
+    void handleSpoolSelected(wxThreadEvent &event);
+
+    void handleSpoolSelectError(wxThreadEvent &event);
 
     void handleTimer(wxTimerEvent &event);
 
@@ -86,6 +82,12 @@ public:
     MainWindow();
 
     void reloadSettings();
+
+    void handleStartPrint(wxCommandEvent &event) override;
+
+    void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) override;
+
+    void selectFileAndPrint();
 };
 
 

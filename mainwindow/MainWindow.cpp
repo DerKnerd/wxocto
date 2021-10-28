@@ -13,6 +13,7 @@
 #include "../spoolmanager/AddSpoolDialog.h"
 #include "../spoolmanager/EditSpoolDialog.h"
 #include "../octoprint/spoolmanager/DeleteSpoolThread.h"
+#include "../octoprint/spoolmanager/SelectSpoolThread.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
@@ -36,6 +37,10 @@ MainWindow::MainWindow() : MainWindowBase() {
     Bind(wxEVT_THREAD, &MainWindow::handleJobFetchError, this, OctoApiEventId::OctoJobError);
 
     Bind(wxEVT_THREAD, &MainWindow::handlePrintStartError, this, OctoApiEventId::OctoPrintStartError);
+
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolSelected, this, OctoApiEventId::OctoPrintSpoolManagerSpoolSelected);
+    Bind(wxEVT_THREAD, &MainWindow::handleSpoolSelectError, this,
+         OctoApiEventId::OctoPrintSpoolManagerSpoolSelectError);
 
     Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleSpoolSaved, this);
 
@@ -121,6 +126,8 @@ void MainWindow::handleJobFetched(wxThreadEvent &event) {
                         dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(selectedFile))->file.type ==
                         OctoprintFile::File;
 
+    selectedSpoolChoice->Enable(!(job.state == Printing || job.state == Paused || job.state == Pausing));
+
     toolbar->EnableTool(MainWindowActions::CancelPrint,
                         job.state == Printing || job.state == Paused || job.state == Pausing);
     toolbar->EnableTool(MainWindowActions::StartPrint,
@@ -198,6 +205,8 @@ void MainWindow::handlePrinterSettings(wxCommandEvent &event) {
 
 void MainWindow::handleStartPrint(wxCommandEvent &event) {
     auto treeListItem = tlcFiles->GetSelection();
+    auto filamentLengthToPrint = 0.0;
+    auto canPrint = false;
     if (treeListItem.IsOk() &&
         dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem))->file.type ==
         OctoprintFile::File) {
@@ -206,12 +215,29 @@ void MainWindow::handleStartPrint(wxCommandEvent &event) {
         if (selectedFile.type == OctoprintFile::Folder) {
             wxMessageBox(_("Please select a file, folders can't be printed"), _("Error"), wxCENTRE | wxICON_ERROR);
         } else {
-            auto selectFileThread = new SelectAndPrintFileThread(this, selectedFile.origin, selectedFile.path);
-            selectFileThread->Run();
+            canPrint = true;
+            filamentLengthToPrint = selectedFile.filamentLength;
         }
     } else if (currentJob.fileSelected) {
-        auto selectFileThread = new SelectAndPrintFileThread(this, currentJob.origin, currentJob.path);
-        selectFileThread->Run();
+        canPrint = true;
+        filamentLengthToPrint = currentJob.filamentLength;
+    }
+
+    if (canPrint) {
+        auto selection = selectedSpoolChoice->GetSelection();
+        if (selection == 0) {
+            auto selectSpoolThread = new SelectSpoolThread(this, -1);
+            selectSpoolThread->Run();
+        } else {
+            auto selectedSpool = (OctoprintSpool *) selectedSpoolChoice->GetClientData(selection);
+            if (selectedSpool->leftLength < filamentLengthToPrint) {
+                wxMessageBox(
+                        _("You don't have enough filament on the selected spool, please choose a different spool"));
+            } else {
+                auto selectSpoolThread = new SelectSpoolThread(this, selectedSpool->databaseId);
+                selectSpoolThread->Run();
+            }
+        }
     }
 }
 
@@ -297,10 +323,13 @@ void MainWindow::handleDeleteSpoolDialog(wxWindowModalDialogEvent &event) {
     deleteSpool->Run();
 }
 
-void MainWindow::handleSpoolSelected(wxDataViewEvent &event) {
+void MainWindow::handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) {
     auto item = event.GetItem();
     toolbar->EnableTool(MainWindowActions::DeleteSpool, item.IsOk());
     toolbar->EnableTool(MainWindowActions::EditSpool, item.IsOk());
+
+    printingMenu->Enable(MainWindowActions::DeleteSpool, item.IsOk());
+    printingMenu->Enable(MainWindowActions::EditSpool, item.IsOk());
 }
 
 void MainWindow::handleSpoolsDeleted(wxThreadEvent &event) {
@@ -310,4 +339,27 @@ void MainWindow::handleSpoolsDeleted(wxThreadEvent &event) {
 
 void MainWindow::handleSpoolsDeleteError(wxThreadEvent &event) {
     wxMessageBox(_("Failed to delete the spool"));
+}
+
+void MainWindow::handleSpoolSelected(wxThreadEvent &event) {
+    selectFileAndPrint();
+}
+
+void MainWindow::selectFileAndPrint() {
+    auto treeListItem = tlcFiles->GetSelection();
+    if (treeListItem.IsOk() &&
+        dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem))->file.type ==
+        OctoprintFile::File) {
+        auto itemData = tlcFiles->GetItemData(tlcFiles->GetSelection());
+        auto selectedFile = dynamic_cast<OctoprintFileClientData *>(itemData)->file;
+        auto selectFileThread = new SelectAndPrintFileThread(this, selectedFile.origin, selectedFile.path);
+        selectFileThread->Run();
+    } else if (currentJob.fileSelected) {
+        auto selectFileThread = new SelectAndPrintFileThread(this, currentJob.origin, currentJob.path);
+        selectFileThread->Run();
+    }
+}
+
+void MainWindow::handleSpoolSelectError(wxThreadEvent &event) {
+    wxMessageBox(_("Failed to select spool"));
 }

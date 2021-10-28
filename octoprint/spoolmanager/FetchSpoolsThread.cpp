@@ -26,10 +26,12 @@ void *FetchSpoolsThread::Entry() {
             auto body = response->getBody()->toString();
             auto jsonBody = nlohmann::json::parse(body);
             auto spoolData = OctoprintSpoolData();
-            auto selectedSpoolId = 0;
+            auto selectedSpoolId = -1;
             for (const auto &item: jsonBody["selectedSpools"]) {
-                selectedSpoolId = item["databaseId"];
-                break;
+                if (!item.is_null()) {
+                    selectedSpoolId = item["databaseId"];
+                    break;
+                }
             }
 
             spoolData.selectedSpool = selectedSpoolId;

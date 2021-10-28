@@ -146,7 +146,7 @@ public:
 
     virtual void handleCancelPrint(wxCommandEvent &event) = 0;
 
-    virtual void handleSpoolSelected(wxDataViewEvent &event) = 0;
+    virtual void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) = 0;
 };
 
 
