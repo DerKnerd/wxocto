@@ -14,6 +14,7 @@
 #include "../spoolmanager/EditSpoolDialog.h"
 #include "../octoprint/spoolmanager/DeleteSpoolThread.h"
 #include "../octoprint/spoolmanager/SelectSpoolThread.h"
+#include "../octoprint/DeleteFileThread.h"
 #include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
@@ -24,6 +25,9 @@ MainWindow::MainWindow() : MainWindowBase() {
 
     Bind(wxEVT_THREAD, &MainWindow::handleFilesFetched, this, OctoApiEventId::OctoFilesFetched);
     Bind(wxEVT_THREAD, &MainWindow::handleFilesFetchError, this, OctoApiEventId::OctoFilesError);
+
+    Bind(wxEVT_THREAD, &MainWindow::handleFileDeleted, this, OctoApiEventId::OctoFileDeleted);
+    Bind(wxEVT_THREAD, &MainWindow::handleFileDeleteError, this, OctoApiEventId::OctoFileDeleteError);
 
     Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetched, this, OctoApiEventId::OctoPrintSpoolManagerSpoolsFetched);
     Bind(wxEVT_THREAD, &MainWindow::handleSpoolsFetchError, this,
@@ -139,16 +143,17 @@ void MainWindow::handleJobFetched(wxThreadEvent &event) {
     toolbar->EnableTool(MainWindowActions::PausePrint, job.state == Printing);
     toolbar->EnableTool(MainWindowActions::ResumePrint, job.state == Paused || job.state == Pausing);
 
-    printingMenu->Enable(MainWindowActions::CancelPrint,
-                         job.state == Printing || job.state == Paused || job.state == Pausing);
-    printingMenu->Enable(MainWindowActions::StartPrint,
-                         (job.state == Operational || job.state == Error) && job.fileSelected);
+    octoprintMenu->Enable(MainWindowActions::CancelPrint,
+                          job.state == Printing || job.state == Paused || job.state == Pausing);
+    octoprintMenu->Enable(MainWindowActions::StartPrint,
+                          (job.state == Operational || job.state == Error) && job.fileSelected);
     if (!job.fileSelected) {
-        printingMenu->Enable(MainWindowActions::StartPrint,
-                             (job.state == Operational || job.state == Error) && fileSelected);
+        octoprintMenu->Enable(MainWindowActions::StartPrint,
+                              (job.state == Operational || job.state == Error) && fileSelected);
     }
-    printingMenu->Enable(MainWindowActions::PausePrint, job.state == Printing);
-    printingMenu->Enable(MainWindowActions::ResumePrint, job.state == Paused || job.state == Pausing);
+    octoprintMenu->Enable(MainWindowActions::PausePrint, job.state == Printing);
+    octoprintMenu->Enable(MainWindowActions::ResumePrint, job.state == Paused || job.state == Pausing);
+    checkIfFileIsDeletable();
 }
 
 void MainWindow::handleJobFetchError(wxThreadEvent &event) {
@@ -164,10 +169,10 @@ void MainWindow::handleJobFetchError(wxThreadEvent &event) {
     toolbar->EnableTool(MainWindowActions::PausePrint, false);
     toolbar->EnableTool(MainWindowActions::ResumePrint, false);
 
-    printingMenu->Enable(MainWindowActions::CancelPrint, false);
-    printingMenu->Enable(MainWindowActions::StartPrint, false);
-    printingMenu->Enable(MainWindowActions::PausePrint, false);
-    printingMenu->Enable(MainWindowActions::ResumePrint, false);
+    octoprintMenu->Enable(MainWindowActions::CancelPrint, false);
+    octoprintMenu->Enable(MainWindowActions::StartPrint, false);
+    octoprintMenu->Enable(MainWindowActions::PausePrint, false);
+    octoprintMenu->Enable(MainWindowActions::ResumePrint, false);
 }
 
 void MainWindow::handleTimer(wxTimerEvent &event) {
@@ -193,7 +198,7 @@ void MainWindow::handleEditSpool(wxCommandEvent &event) {
 void MainWindow::handleDeleteSpool(wxCommandEvent &event) {
     auto dialog = new wxMessageDialog(this, _("Are you sure to delete the selected spool?"), _("Delete spool?"),
                                       wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_WARNING);
-    dialog->SetYesNoLabels("Delete spool", "Keep spool");
+    dialog->SetYesNoLabels(_("Delete spool"), _("Keep spool"));
 
     dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleDeleteSpoolDialog, this);
     dialog->ShowWindowModal();
@@ -249,7 +254,7 @@ void MainWindow::handleResumePrint(wxCommandEvent &event) {
 void MainWindow::handlePausePrint(wxCommandEvent &event) {
     auto dialog = new wxMessageDialog(this, _("Are you sure to pause the print?"), _("Pause print?"),
                                       wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_QUESTION);
-    dialog->SetYesNoLabels("Pause print", "Keep printing");
+    dialog->SetYesNoLabels(_("Pause print"), _("Keep printing"));
 
     dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handlePausePrintDialogClosed, this);
     dialog->ShowWindowModal();
@@ -258,7 +263,7 @@ void MainWindow::handlePausePrint(wxCommandEvent &event) {
 void MainWindow::handleCancelPrint(wxCommandEvent &event) {
     auto dialog = new wxMessageDialog(this, _("Are you sure to cancel the print?"), _("Cancel print?"),
                                       wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_QUESTION);
-    dialog->SetYesNoLabels("Cancel print", "Keep printing");
+    dialog->SetYesNoLabels(_("Cancel print"), _("Keep printing"));
 
     dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleCancelPrintDialogClosed, this);
     dialog->ShowWindowModal();
@@ -328,8 +333,8 @@ void MainWindow::handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) {
     toolbar->EnableTool(MainWindowActions::DeleteSpool, item.IsOk());
     toolbar->EnableTool(MainWindowActions::EditSpool, item.IsOk());
 
-    printingMenu->Enable(MainWindowActions::DeleteSpool, item.IsOk());
-    printingMenu->Enable(MainWindowActions::EditSpool, item.IsOk());
+    spoolsMenu->Enable(MainWindowActions::DeleteSpool, item.IsOk());
+    spoolsMenu->Enable(MainWindowActions::EditSpool, item.IsOk());
 }
 
 void MainWindow::handleSpoolsDeleted(wxThreadEvent &event) {
@@ -362,4 +367,50 @@ void MainWindow::selectFileAndPrint() {
 
 void MainWindow::handleSpoolSelectError(wxThreadEvent &event) {
     wxMessageBox(_("Failed to select spool"));
+}
+
+void MainWindow::handleTlcFilesSelectionChanged(wxDataViewEvent &event) {
+    checkIfFileIsDeletable();
+}
+
+void MainWindow::checkIfFileIsDeletable() {
+    auto treeListItem = tlcFiles->GetSelection();
+    if (treeListItem.IsOk()) {
+        auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
+        auto canDelete = item->file.path != currentJob.path && item->file.type == OctoprintFile::File;
+
+        toolbar->EnableTool(DeleteFile, canDelete);
+        octoprintMenu->Enable(DeleteFile, canDelete);
+    } else {
+        toolbar->EnableTool(DeleteFile, false);
+        octoprintMenu->Enable(DeleteFile, false);
+    }
+}
+
+void MainWindow::handleUploadFile(wxCommandEvent &event) {
+
+}
+
+void MainWindow::handleDeleteFile(wxCommandEvent &event) {
+    auto dialog = new wxMessageDialog(this, _("Are you sure to delete the file?"), wxMessageBoxCaptionStr,
+                                      wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_QUESTION);
+    dialog->SetYesNoLabels(_("Delete file"), _("Keep file"));
+
+    dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleDeleteFileDialog, this);
+    dialog->ShowWindowModal();
+}
+
+void MainWindow::handleDeleteFileDialog(wxWindowModalDialogEvent &event) {
+    auto treeListItem = tlcFiles->GetSelection();
+    auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
+    auto deleteFile = new DeleteFileThread(this, item->file);
+    deleteFile->Run();
+}
+
+void MainWindow::handleFileDeleted(wxThreadEvent &event) {
+    updateView();
+}
+
+void MainWindow::handleFileDeleteError(wxThreadEvent &event) {
+    updateView();
 }

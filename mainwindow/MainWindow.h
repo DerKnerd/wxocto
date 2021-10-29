@@ -29,10 +29,13 @@ private:
 
     void fillFileTree(wxTreeListItem parent, const std::vector<OctoprintFile> &files);
 
-private:
     void handleFilesFetched(wxThreadEvent &event);
 
     void handleFilesFetchError(wxThreadEvent &event);
+
+    void handleFileDeleted(wxThreadEvent &event);
+
+    void handleFileDeleteError(wxThreadEvent &event);
 
     void handleJobFetched(wxThreadEvent &event);
 
@@ -62,6 +65,8 @@ private:
 
     void handleDeleteSpoolDialog(wxWindowModalDialogEvent &event);
 
+    void handleDeleteFileDialog(wxWindowModalDialogEvent &event);
+
     OctoprintSpoolData octoprintSpoolData;
 
 public:
@@ -79,6 +84,10 @@ public:
 
     void handleDeleteSpool(wxCommandEvent &event) override;
 
+    void handleUploadFile(wxCommandEvent &event) override;
+
+    void handleDeleteFile(wxCommandEvent &event) override;
+
     MainWindow();
 
     void reloadSettings();
@@ -88,6 +97,10 @@ public:
     void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) override;
 
     void selectFileAndPrint();
+
+    void handleTlcFilesSelectionChanged(wxDataViewEvent &event) override;
+
+    void checkIfFileIsDeletable();
 };
 
 

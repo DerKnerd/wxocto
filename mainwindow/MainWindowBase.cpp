@@ -23,6 +23,12 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
                      wxITEM_NORMAL, "", "", nullptr);
     toolbar->AddSeparator();
 
+    toolbar->AddTool(MainWindowActions::UploadFile, _("Upload file"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "", "",
+                     nullptr);
+    toolbar->AddTool(MainWindowActions::DeleteFile, _("Delete file"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "", "",
+                     nullptr);
+    toolbar->AddSeparator();
+
     toolbar->AddTool(MainWindowActions::StartPrint, _("Start print"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "", "",
                      nullptr);
     toolbar->AddTool(MainWindowActions::ResumePrint, _("Resume print"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
@@ -50,20 +56,23 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     fileMenu->AppendSeparator();
     fileMenu->Append(wxID_EXIT, _("Exit"));
 
-    printingMenu = new wxMenu();
-    printingMenu->Append(MainWindowActions::StartPrint, _("Start print"));
-    printingMenu->Append(MainWindowActions::ResumePrint, _("Resume print"));
-    printingMenu->Append(MainWindowActions::PausePrint, _("Pause print"));
-    printingMenu->Append(MainWindowActions::CancelPrint, _("Cancel print"));
+    octoprintMenu = new wxMenu();
+    octoprintMenu->Append(MainWindowActions::UploadFile, _("Upload file"));
+    octoprintMenu->Append(MainWindowActions::DeleteFile, _("Delete file"));
+    octoprintMenu->AppendSeparator();
+    octoprintMenu->Append(MainWindowActions::StartPrint, _("Start print"));
+    octoprintMenu->Append(MainWindowActions::ResumePrint, _("Resume print"));
+    octoprintMenu->Append(MainWindowActions::PausePrint, _("Pause print"));
+    octoprintMenu->Append(MainWindowActions::CancelPrint, _("Cancel print"));
 
-    auto spoolsMenu = new wxMenu();
+    spoolsMenu = new wxMenu();
     spoolsMenu->Append(MainWindowActions::AddSpool, _("Add spool"));
     spoolsMenu->Append(MainWindowActions::EditSpool, _("Edit spool"));
     spoolsMenu->Append(MainWindowActions::DeleteSpool, _("Delete spool"));
 
-    menuBar->Append(fileMenu, "File");
-    menuBar->Append(printingMenu, "Printing");
-    menuBar->Append(spoolsMenu, "Spools");
+    menuBar->Append(fileMenu, _("File"));
+    menuBar->Append(octoprintMenu, _("Octoprint"));
+    menuBar->Append(spoolsMenu, _("Spools"));
 
     auto contentSizer = new wxFlexGridSizer(0, 2, 0, 0);
     contentSizer->SetFlexibleDirection(wxBOTH);
@@ -230,19 +239,30 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
         wxPersistenceManager::Get().Restore(this);
     }
 
+    toolbar->EnableTool(MainWindowActions::DeleteFile, false);
+    octoprintMenu->Enable(MainWindowActions::DeleteFile, false);
+
     setupEvents();
 
     // Default event handler
     Bind(wxEVT_MENU, &MainWindowBase::handlePrinterSettings, this, PrinterSettings);
+
     Bind(wxEVT_MENU, &MainWindowBase::handleStartPrint, this, StartPrint);
     Bind(wxEVT_MENU, &MainWindowBase::handleResumePrint, this, ResumePrint);
     Bind(wxEVT_MENU, &MainWindowBase::handlePausePrint, this, PausePrint);
     Bind(wxEVT_MENU, &MainWindowBase::handleCancelPrint, this, CancelPrint);
+
+    Bind(wxEVT_MENU, &MainWindowBase::handleUploadFile, this, UploadFile);
+    Bind(wxEVT_MENU, &MainWindowBase::handleDeleteFile, this, DeleteFile);
+
     Bind(wxEVT_MENU, &MainWindowBase::handleAddSpool, this, AddSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteSpool, this, DeleteSpool);
+
     Bind(wxEVT_MENU, &MainWindowBase::handleExit, this, wxID_EXIT);
+
     Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &MainWindowBase::handleDvlSpoolsSelectionChanged, this, Spools);
+    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &MainWindowBase::handleTlcFilesSelectionChanged, this, Files);
 }
 
 MainWindowBase::~MainWindowBase() = default;

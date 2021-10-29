@@ -30,11 +30,15 @@ enum MainWindowActions {
     ResumePrint,
     PausePrint,
     CancelPrint,
+
     AddSpool,
     EditSpool,
     DeleteSpool,
-    SelectSpool,
+
     PrinterSettings,
+
+    UploadFile,
+    DeleteFile,
 };
 
 enum FileListColumns {
@@ -97,7 +101,8 @@ public:
 
 class MainWindowBase : public wxFrame {
 protected:
-    wxMenu *printingMenu;
+    wxMenu *octoprintMenu;
+    wxMenu *spoolsMenu;
     wxToolBarBase *toolbar;
     wxGauge *prgPrintProgress;
     wxStaticText *lblTimeElapsed;
@@ -122,6 +127,7 @@ public:
 
     enum Controls {
         Spools = 0,
+        Files,
     };
 
     MainWindowBase();
@@ -146,7 +152,13 @@ public:
 
     virtual void handleCancelPrint(wxCommandEvent &event) = 0;
 
+    virtual void handleUploadFile(wxCommandEvent &event) = 0;
+
+    virtual void handleDeleteFile(wxCommandEvent &event) = 0;
+
     virtual void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) = 0;
+
+    virtual void handleTlcFilesSelectionChanged(wxDataViewEvent &event) = 0;
 };
 
 

@@ -8,6 +8,9 @@
 enum OctoApiEventId {
     OctoFilesFetched,
     OctoFilesError,
+    OctoFileDeleted,
+    OctoFileDeleteError,
+
     OctoJobFetched,
     OctoJobError,
     OctoPrintStarted,
