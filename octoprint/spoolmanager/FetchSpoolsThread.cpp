@@ -3,28 +3,18 @@
 //
 
 #include <nlohmann/json.hpp>
-#include <easyhttpcpp/EasyHttp.h>
 #include "FetchSpoolsThread.h"
 #include "OctoprintSpool.h"
 #include "../../MainApp.h"
 #include "../OctoApiEventIds.h"
 #include "OctoprintSpoolData.h"
+#include "../httpClient.h"
 
 void *FetchSpoolsThread::Entry() {
-    auto settings = MainApp::getInstance()->GetSettings();
-    auto request = easyhttpcpp::Request::Builder()
-            .httpGet()
-            .setUrl(settings.server +
-                    "/plugin/SpoolManager/loadSpoolsByQuery?from=0&to=9999999&sortColumn=displayName&sortOrder=asc&filterName=all")
-            .setHeader("X-Api-Key", settings.apiKey)
-            .build();
     try {
-        auto httpClient = easyhttpcpp::EasyHttp::Builder().build();
-        auto call = httpClient->newCall(request);
-        auto response = call->execute();
-        if (response->isSuccessful() && response->getCode() == 200) {
-            auto body = response->getBody()->toString();
-            auto jsonBody = nlohmann::json::parse(body);
+        auto response = getClient().Get("/plugin/SpoolManager/loadSpoolsByQuery?from=0&to=9999999&sortColumn=displayName&sortOrder=asc&filterName=all");
+        if (response.error() == httplib::Error::Success && response->status == 200) {
+            auto jsonBody = nlohmann::json::parse(response->body);
             auto spoolData = OctoprintSpoolData();
             auto selectedSpoolId = -1;
             for (const auto &item: jsonBody["selectedSpools"]) {

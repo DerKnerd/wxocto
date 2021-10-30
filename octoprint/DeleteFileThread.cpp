@@ -5,32 +5,20 @@
 #include "DeleteFileThread.h"
 #include "OctoApiEventIds.h"
 #include "../MainApp.h"
+#include "httpClient.h"
 
 #include <utility>
-#include <easyhttpcpp/EasyHttp.h>
 
 void *DeleteFileThread::Entry() {
-    auto settings = MainApp::getInstance()->GetSettings();
-    auto request = easyhttpcpp::Request::Builder()
-            .httpDelete()
-            .setUrl((settings.server + "/api/files/" + file.origin + "/" + file.path).utf8_string())
-            .setHeader("X-Api-Key", settings.apiKey)
-            .build();
-    try {
-        auto httpClient = easyhttpcpp::EasyHttp::Builder().build();
-        auto call = httpClient->newCall(request);
-        auto response = call->execute();
-        if (response->isSuccessful() && response->getCode() == 204) {
-            auto event = new wxThreadEvent();
-            event->SetId(OctoApiEventId::OctoFileDeleted);
-            wxQueueEvent(parent, event);
-        }
-    } catch (const std::exception &e) {
-        auto event = new wxThreadEvent();
-        event->SetPayload(e);
+    auto event = new wxThreadEvent();
+    auto httpClient = getClient();
+    auto response = httpClient.Delete(("/api/files/" + file.origin + "/" + file.path).c_str());
+    if (response.error() == httplib::Error::Success && response->status == 204) {
+        event->SetId(OctoApiEventId::OctoFileDeleted);
+    } else {
         event->SetId(OctoApiEventId::OctoFileDeleteError);
-        wxQueueEvent(parent, event);
     }
+    wxQueueEvent(parent, event);
 
     return nullptr;
 }

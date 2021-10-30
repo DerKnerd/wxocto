@@ -2,28 +2,20 @@
 // Created by imanuel on 09.10.21.
 //
 
-#include <easyhttpcpp/EasyHttp.h>
 #include "FetchFilesThread.h"
 #include "../MainApp.h"
 #include "OctoprintFile.h"
 #include "OctoApiEventIds.h"
+#include "httpClient.h"
 
 FetchFilesThread::FetchFilesThread(wxWindow *parent) : wxThread(wxThreadKind::wxTHREAD_DETACHED), parent(parent) {}
 
 wxThread::ExitCode FetchFilesThread::Entry() {
-    auto settings = MainApp::getInstance()->GetSettings();
-    auto request = easyhttpcpp::Request::Builder()
-            .httpGet()
-            .setUrl(settings.server + "/api/files?recursive=true")
-            .setHeader("X-Api-Key", settings.apiKey)
-            .build();
     try {
-        auto httpClient = easyhttpcpp::EasyHttp::Builder().build();
-        auto call = httpClient->newCall(request);
-        auto response = call->execute();
-        if (response->isSuccessful() && response->getCode() == 200) {
-            auto body = response->getBody()->toString();
-            auto jsonBody = nlohmann::json::parse(body);
+        auto client = getClient();
+        auto result = client.Get("/api/files?recursive=true");
+        if (result.error() == httplib::Error::Success && result->status == 200) {
+            auto jsonBody = nlohmann::json::parse(result->body);
             auto files = std::vector<OctoprintFile>();
             for (const auto &item: jsonBody["files"]) {
                 files.push_back(handleFile(item));

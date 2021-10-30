@@ -12,7 +12,7 @@
 class SelectAndPrintFileThread : public wxThread {
 private:
 public:
-    explicit SelectAndPrintFileThread(wxWindow *parent, wxString origin, wxString filepath);
+    explicit SelectAndPrintFileThread(wxWindow *parent, const wxString& origin, const wxString& filepath);
 
 private:
     wxWindow *parent;

@@ -28,9 +28,9 @@ include(./conan.cmake)
 
 conan_cmake_configure(
         REQUIRES
-        easyhttpcpp/2.1.0
         nlohmann_json/3.10.2
         expat/2.4.1
+        cpp-httplib/0.9.7
         GENERATORS cmake_find_package
 )
 
@@ -44,11 +44,11 @@ conan_cmake_install(PATH_OR_REFERENCE .
         OPTIONS ${options})
 
 find_package(expat)
-find_package(easyhttpcppeasyhttp)
 find_package(nlohmann_json)
+find_package(httplib)
 
 file(GLOB SOURCES mainwindow/*.cpp octoprint/*.cpp octoprint/spoolmanager/*.cpp spoolmanager/*.cpp settings/*.cpp)
 
 add_executable(wxocto ${target} main.rc main.cpp MainApp.h MainApp.cpp ${SOURCES})
 target_include_directories(wxocto PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(wxocto PRIVATE expat::expat easyhttpcppeasyhttp::easyhttpcppeasyhttp nlohmann_json::nlohmann_json ${wxWidgets_LIBRARIES})
+target_link_libraries(wxocto PRIVATE httplib::httplib expat::expat nlohmann_json::nlohmann_json ${wxWidgets_LIBRARIES})

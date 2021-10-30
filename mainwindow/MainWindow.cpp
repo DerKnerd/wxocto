@@ -15,7 +15,6 @@
 #include "../octoprint/spoolmanager/DeleteSpoolThread.h"
 #include "../octoprint/spoolmanager/SelectSpoolThread.h"
 #include "../octoprint/DeleteFileThread.h"
-#include <easyhttpcpp/EasyHttp.h>
 #include <sstream>
 #include <iomanip>
 #include <wx/dataview.h>
