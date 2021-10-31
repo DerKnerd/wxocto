@@ -20,15 +20,20 @@ bool MainApp::OnInit() {
     if (!wxApp::OnInit())
         return false;
 
-    wxLocale::AddCatalogLookupPathPrefix(".");
-    wxLocale::AddCatalogLookupPathPrefix("..");
     auto translation = wxTranslations::Get();
     if (translation == nullptr) {
         translation = new wxTranslations();
         wxTranslations::Set(translation);
     }
 
-    translation->SetLanguage("de");
+#if WIN32
+    auto loader = new wxResourceTranslationsLoader();
+    translation->SetLoader(loader);
+#else
+    wxLocale::AddCatalogLookupPathPrefix(".");
+    wxLocale::AddCatalogLookupPathPrefix("..");
+#endif
+
     translation->AddStdCatalog();
     translation->AddCatalog("wxocto");
 #ifdef __LINUX__
