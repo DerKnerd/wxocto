@@ -10,6 +10,8 @@ enum OctoApiEventId {
     OctoFilesError,
     OctoFileDeleted,
     OctoFileDeleteError,
+    OctoFileUploaded,
+    OctoFileUploadError,
 
     OctoJobFetched,
     OctoJobError,

@@ -20,6 +20,7 @@ private:
     wxTimer *pollOctoTimer;
     FetchPrintStatusThread *statusThread = nullptr;
     OctoprintJob currentJob;
+    std::vector<OctoprintFile> files;
     std::vector<wxString> vendors;
     std::vector<wxString> materials;
 
@@ -67,9 +68,8 @@ private:
 
     void handleDeleteFileDialog(wxWindowModalDialogEvent &event);
 
-    OctoprintSpoolData octoprintSpoolData;
+    void handleFileUploaded(wxWindowModalDialogEvent &event);
 
-public:
     void handleResumePrint(wxCommandEvent &event) override;
 
     void handlePausePrint(wxCommandEvent &event) override;
@@ -88,10 +88,10 @@ public:
 
     void handleDeleteFile(wxCommandEvent &event) override;
 
-    MainWindow();
+protected:
+    void handleDeleteFolder(wxCommandEvent &event) override;
 
-    void reloadSettings();
-
+private:
     void handleStartPrint(wxCommandEvent &event) override;
 
     void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) override;
@@ -101,6 +101,15 @@ public:
     void handleTlcFilesSelectionChanged(wxDataViewEvent &event) override;
 
     void checkIfFileIsDeletable();
+
+    std::vector<wxString> flattenFolders(std::vector<OctoprintFile> files);
+
+    OctoprintSpoolData octoprintSpoolData;
+
+public:
+    MainWindow();
+
+    void reloadSettings();
 };
 
 

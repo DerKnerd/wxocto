@@ -39,6 +39,7 @@ enum MainWindowActions {
 
     UploadFile,
     DeleteFile,
+    DeleteFolder,
 };
 
 enum FileListColumns {
@@ -116,25 +117,11 @@ protected:
     wxTreeListCtrl *tlcFiles;
     wxPanel *nbpSpools;
     wxDataViewListCtrl *dvlSpools;
-    wxStatusBar *statusBar;
     OctoprintSpoolDataViewListModel *spoolListModel;
     OctoprintSpool selectedSpool;
 
 protected:
     virtual void setupEvents() {}
-
-public:
-
-    enum Controls {
-        Spools = 0,
-        Files,
-    };
-
-    MainWindowBase();
-
-    ~MainWindowBase() override;
-
-    virtual void handleExit(wxCommandEvent &event);
 
     virtual void handlePrinterSettings(wxCommandEvent &event) = 0;
 
@@ -156,9 +143,24 @@ public:
 
     virtual void handleDeleteFile(wxCommandEvent &event) = 0;
 
+    virtual void handleDeleteFolder(wxCommandEvent &event) = 0;
+
     virtual void handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) = 0;
 
     virtual void handleTlcFilesSelectionChanged(wxDataViewEvent &event) = 0;
+
+public:
+
+    enum Controls {
+        Spools = 0,
+        Files,
+    };
+
+    MainWindowBase();
+
+    ~MainWindowBase() override;
+
+    virtual void handleExit(wxCommandEvent &event);
 };
 
 

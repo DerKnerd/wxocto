@@ -14,7 +14,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     SetIcon(wxICON(wxocto));
     SetMinClientSize(wxSize(1280, 600));
     auto panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
-    statusBar = CreateStatusBar();
+    CreateStatusBar();
 
     toolbar = CreateToolBar(wxTB_HORIZONTAL | wxTB_HORZ_LAYOUT | wxTB_NOICONS | wxTB_TEXT);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
@@ -26,6 +26,9 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     toolbar->AddTool(MainWindowActions::UploadFile, _("Upload file"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "", "",
                      nullptr);
     toolbar->AddTool(MainWindowActions::DeleteFile, _("Delete file"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "", "",
+                     nullptr);
+    toolbar->AddTool(MainWindowActions::DeleteFolder, _("Delete folder"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, "",
+                     "",
                      nullptr);
     toolbar->AddSeparator();
 
@@ -59,6 +62,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
     octoprintMenu = new wxMenu();
     octoprintMenu->Append(MainWindowActions::UploadFile, _("Upload file"));
     octoprintMenu->Append(MainWindowActions::DeleteFile, _("Delete file"));
+    octoprintMenu->Append(MainWindowActions::DeleteFolder, _("Delete folder"));
     octoprintMenu->AppendSeparator();
     octoprintMenu->Append(MainWindowActions::StartPrint, _("Start print"));
     octoprintMenu->Append(MainWindowActions::ResumePrint, _("Resume print"));
@@ -254,6 +258,7 @@ MainWindowBase::MainWindowBase() : wxFrame(nullptr, wxID_ANY, _("wxOcto"), wxDef
 
     Bind(wxEVT_MENU, &MainWindowBase::handleUploadFile, this, UploadFile);
     Bind(wxEVT_MENU, &MainWindowBase::handleDeleteFile, this, DeleteFile);
+    Bind(wxEVT_MENU, &MainWindowBase::handleDeleteFolder, this, DeleteFolder);
 
     Bind(wxEVT_MENU, &MainWindowBase::handleAddSpool, this, AddSpool);
     Bind(wxEVT_MENU, &MainWindowBase::handleEditSpool, this, EditSpool);

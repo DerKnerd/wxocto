@@ -17,7 +17,7 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     auto colorPickerLabel = new wxStaticText(this, wxID_ANY, _("Color"));
     auto vendorLabel = new wxStaticText(this, wxID_ANY, _("Vendor"));
     auto materialLabel = new wxStaticText(this, wxID_ANY, _("Material"));
-    auto densityLabel = new wxStaticText(this, wxID_ANY, _(L"Density (g/m³)"));
+    auto densityLabel = new wxStaticText(this, wxID_ANY, _("Density (g/m\u00B3)"));
     auto diameterLabel = new wxStaticText(this, wxID_ANY, _("Diameter (mm)"));
     auto toleranceLabel = new wxStaticText(this, wxID_ANY, _("Tolerance (mm)"));
 
@@ -155,6 +155,7 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     auto dialogButtonSizer = CreateStdDialogButtonSizer(wxAPPLY | wxCLOSE);
     dialogSizer->Add(dialogButtonSizer, 1, wxGROW | wxALL, 5);
     this->SetSizerAndFit(dialogSizer);
+
     auto applyButton = dialogButtonSizer->GetApplyButton();
     applyButton->SetLabel(_("Save spool"));
 

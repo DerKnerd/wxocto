@@ -15,6 +15,7 @@
 #include "../octoprint/spoolmanager/DeleteSpoolThread.h"
 #include "../octoprint/spoolmanager/SelectSpoolThread.h"
 #include "../octoprint/DeleteFileThread.h"
+#include "FileUploadDialog.h"
 #include <sstream>
 #include <iomanip>
 #include <wx/dataview.h>
@@ -83,9 +84,9 @@ void MainWindow::updateView() {
 }
 
 void MainWindow::handleFilesFetched(wxThreadEvent &event) {
-    auto data = event.GetPayload<std::vector<OctoprintFile>>();
+    files = event.GetPayload<std::vector<OctoprintFile>>();
     tlcFiles->DeleteAllItems();
-    fillFileTree(tlcFiles->GetRootItem(), data);
+    fillFileTree(tlcFiles->GetRootItem(), files);
 }
 
 void MainWindow::handleFilesFetchError(wxThreadEvent &event) {
@@ -320,11 +321,13 @@ void MainWindow::handleSpoolSaved(wxWindowModalDialogEvent &event) {
 }
 
 void MainWindow::handleDeleteSpoolDialog(wxWindowModalDialogEvent &event) {
-    auto selectedSpoolItem = dvlSpools->GetSelection();
-    auto selectedSpool = (OctoprintSpool *) (selectedSpoolItem.m_pItem);
+    if (event.GetReturnCode() == wxID_YES) {
+        auto selectedSpoolItem = dvlSpools->GetSelection();
+        auto selectedSpool = (OctoprintSpool *) (selectedSpoolItem.m_pItem);
 
-    auto deleteSpool = new DeleteSpoolThread(this, selectedSpool->databaseId);
-    deleteSpool->Run();
+        auto deleteSpool = new DeleteSpoolThread(this, selectedSpool->databaseId);
+        deleteSpool->Run();
+    }
 }
 
 void MainWindow::handleDvlSpoolsSelectionChanged(wxDataViewEvent &event) {
@@ -376,18 +379,29 @@ void MainWindow::checkIfFileIsDeletable() {
     auto treeListItem = tlcFiles->GetSelection();
     if (treeListItem.IsOk()) {
         auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
-        auto canDelete = item->file.path != currentJob.path && item->file.type == OctoprintFile::File;
+        auto canDeleteFile = item->file.path != currentJob.path && item->file.type == OctoprintFile::File;
+        auto canDeleteFolder = !currentJob.path.starts_with(item->file.path) && item->file.type == OctoprintFile::Folder && item->file.children.empty();
 
-        toolbar->EnableTool(DeleteFile, canDelete);
-        octoprintMenu->Enable(DeleteFile, canDelete);
+        toolbar->EnableTool(DeleteFile, canDeleteFile);
+        octoprintMenu->Enable(DeleteFile, canDeleteFile);
+
+        toolbar->EnableTool(DeleteFolder, canDeleteFolder);
+        octoprintMenu->Enable(DeleteFolder, canDeleteFolder);
     } else {
         toolbar->EnableTool(DeleteFile, false);
         octoprintMenu->Enable(DeleteFile, false);
+
+        toolbar->EnableTool(DeleteFolder, false);
+        octoprintMenu->Enable(DeleteFolder, false);
     }
 }
 
 void MainWindow::handleUploadFile(wxCommandEvent &event) {
-
+    auto dialog = new FileUploadDialog(this);
+    dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleFileUploaded, this);
+    auto folders = flattenFolders(files);
+    dialog->setFolders(folders);
+    dialog->ShowModal();
 }
 
 void MainWindow::handleDeleteFile(wxCommandEvent &event) {
@@ -400,16 +414,48 @@ void MainWindow::handleDeleteFile(wxCommandEvent &event) {
 }
 
 void MainWindow::handleDeleteFileDialog(wxWindowModalDialogEvent &event) {
-    auto treeListItem = tlcFiles->GetSelection();
-    auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
-    auto deleteFile = new DeleteFileThread(this, item->file);
-    deleteFile->Run();
+    if (event.GetReturnCode() == wxID_YES) {
+        auto treeListItem = tlcFiles->GetSelection();
+        auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
+        auto deleteFile = new DeleteFileThread(this, item->file);
+        deleteFile->Run();
+    }
 }
 
 void MainWindow::handleFileDeleted(wxThreadEvent &event) {
-    updateView();
+    auto fetchFiles = new FetchFilesThread(this);
+    fetchFiles->Run();
 }
 
 void MainWindow::handleFileDeleteError(wxThreadEvent &event) {
-    updateView();
+    auto fetchFiles = new FetchFilesThread(this);
+    fetchFiles->Run();
+}
+
+void MainWindow::handleFileUploaded(wxWindowModalDialogEvent &event) {
+    auto fetchFiles = new FetchFilesThread(this);
+    fetchFiles->Run();
+}
+
+std::vector<wxString> MainWindow::flattenFolders(std::vector<OctoprintFile> files) {
+    auto result = std::vector<wxString>();
+    for (const auto &item: files) {
+        if (item.type == OctoprintFile::Folder) {
+            result.emplace_back(item.path);
+            for (const auto &subitem: flattenFolders(item.children)) {
+                result.emplace_back(subitem);
+            }
+        }
+    }
+
+    return result;
+}
+
+void MainWindow::handleDeleteFolder(wxCommandEvent &event) {
+    auto dialog = new wxMessageDialog(this, _("Are you sure to delete the folder?"), wxMessageBoxCaptionStr,
+                                      wxCENTER | wxNO_DEFAULT | wxYES_NO | wxICON_QUESTION);
+    dialog->SetYesNoLabels(_("Delete folder"), _("Keep folder"));
+
+    dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED, &MainWindow::handleDeleteFileDialog, this);
+    dialog->ShowWindowModal();
 }
