@@ -4,10 +4,6 @@ project(wxocto CXX)
 set(CMAKE_CXX_STANDARD 23)
 
 include(./ucm.cmake)
-find_package(Intl REQUIRED)
-find_package(Gettext REQUIRED)
-include_directories(${INTL_INCLUDE_DIRS})
-link_directories(${INTL_LIBRARY_DIRS})
 
 ucm_set_runtime(STATIC)
 if (WIN32 OR MINGW)

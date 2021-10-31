@@ -25,6 +25,8 @@
 #include "../octoprint/spoolmanager/OctoprintSpool.h"
 #include "../wxocto.xpm"
 
+#undef DeleteFile
+
 enum MainWindowActions {
     StartPrint = 200,
     ResumePrint,

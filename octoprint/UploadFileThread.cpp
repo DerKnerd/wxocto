@@ -26,7 +26,7 @@ void *UploadFileThread::Entry() {
     auto filename = std::filesystem::path(localFilePath.utf8_string()).filename();
     httplib::MultipartFormDataItems data = {
             {"path", parentFolder.utf8_string()},
-            {"file", content, filename, "application/octet-stream"},
+            {"file", content, filename.string(), "application/octet-stream"},
     };
 
     auto result = getClient().Post("/api/files/local", data);

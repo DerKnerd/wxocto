@@ -28,6 +28,7 @@ bool MainApp::OnInit() {
         wxTranslations::Set(translation);
     }
 
+    translation->SetLanguage("de");
     translation->AddStdCatalog();
     translation->AddCatalog("wxocto");
 #ifdef __LINUX__
