@@ -1,0 +1,395 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-31 04:25+0100\n"
+"PO-Revision-Date: 2021-10-31 04:31+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+
+#: mainwindow/FileUploadDialog.cpp:10 mainwindow/FileUploadDialog.cpp:38
+#: mainwindow/MainWindowBase.cpp:26 mainwindow/MainWindowBase.cpp:63
+msgid "Upload file"
+msgstr "Datei hochladen"
+
+#: mainwindow/FileUploadDialog.cpp:18
+msgid "Folder"
+msgstr "Ordner"
+
+#: mainwindow/FileUploadDialog.cpp:19 mainwindow/MainWindowBase.cpp:77
+#: mainwindow/MainWindowBase.cpp:142
+msgid "File"
+msgstr "Datei"
+
+#: mainwindow/FileUploadDialog.cpp:22
+msgid "Select a file"
+msgstr "Datei wählen"
+
+#: mainwindow/FileUploadDialog.cpp:23
+msgid "GCODE (*.gco;*.gcode)"
+msgstr "GCODE (*.gco;*.gcode)"
+
+#: mainwindow/FileUploadDialog.cpp:62
+msgid "Failed to upload file"
+msgstr "Fehler beim Hochladen der Datei"
+
+#: mainwindow/MainWindow.cpp:93
+msgid "Failed to load files"
+msgstr "Fehler beim Laden der Dateien"
+
+#: mainwindow/MainWindow.cpp:160
+msgid "Failed to fetch job files"
+msgstr "Fehler beim Laden des Druckjobs"
+
+#: mainwindow/MainWindow.cpp:161
+msgid "No file selected"
+msgstr "Keine Datei ausgewählt"
+
+#: mainwindow/MainWindow.cpp:162 mainwindow/MainWindow.cpp:163
+#: mainwindow/MainWindow.cpp:164 mainwindow/MainWindowBase.cpp:117
+#: mainwindow/MainWindowBase.cpp:127 mainwindow/MainWindowBase.cpp:137
+#: mainwindow/MainWindowBase.cpp:148
+msgid "No print started"
+msgstr "Kein Druck gestartet"
+
+#: mainwindow/MainWindow.cpp:199
+msgid "Are you sure to delete the selected spool?"
+msgstr "Soll die gewählte Rolle wirklich gelöscht werden?"
+
+#: mainwindow/MainWindow.cpp:199
+msgid "Delete spool?"
+msgstr "Rolle löschen?"
+
+#: mainwindow/MainWindow.cpp:201 mainwindow/MainWindowBase.cpp:49
+#: mainwindow/MainWindowBase.cpp:75
+msgid "Delete spool"
+msgstr "Rolle löschen"
+
+#: mainwindow/MainWindow.cpp:201
+msgid "Keep spool"
+msgstr "Rolle behalten"
+
+#: mainwindow/MainWindow.cpp:221
+msgid "Please select a file, folders can't be printed"
+msgstr "Bitte wähle eine Datei, Ordner können nicht gedruckt werden"
+
+#: mainwindow/MainWindow.cpp:221
+msgid "Error"
+msgstr "Fehler"
+
+#: mainwindow/MainWindow.cpp:240
+msgid ""
+"You don't have enough filament on the selected spool, please choose a "
+"different spool"
+msgstr ""
+"Auf der gewählten Rolle ist nicht genug Filament übrig, bitte wähle eine "
+"andere Rolle"
+
+#: mainwindow/MainWindow.cpp:255
+msgid "Are you sure to pause the print?"
+msgstr "Soll der Druck pausiert werden?"
+
+#: mainwindow/MainWindow.cpp:255
+msgid "Pause print?"
+msgstr "Druck pausieren?"
+
+#: mainwindow/MainWindow.cpp:257 mainwindow/MainWindowBase.cpp:39
+#: mainwindow/MainWindowBase.cpp:69
+msgid "Pause print"
+msgstr "Druck pausieren"
+
+#: mainwindow/MainWindow.cpp:257 mainwindow/MainWindow.cpp:266
+msgid "Keep printing"
+msgstr "Weiter drucken"
+
+#: mainwindow/MainWindow.cpp:264
+msgid "Are you sure to cancel the print?"
+msgstr "Soll der Druck abgebrochen werden?"
+
+#: mainwindow/MainWindow.cpp:264
+msgid "Cancel print?"
+msgstr "Druck abbrechen?"
+
+#: mainwindow/MainWindow.cpp:266 mainwindow/MainWindowBase.cpp:41
+#: mainwindow/MainWindowBase.cpp:70
+msgid "Cancel print"
+msgstr "Druck abbrechen"
+
+#: mainwindow/MainWindow.cpp:273
+msgid "Failed to start print"
+msgstr "Druck konnte nicht gestartet werden"
+
+#: mainwindow/MainWindow.cpp:298
+msgid "No spool"
+msgstr "Keine Rolle"
+
+#: mainwindow/MainWindow.cpp:315
+msgid "Failed to fetch spools"
+msgstr "Rollen konnten nicht geladen werden"
+
+#: mainwindow/MainWindow.cpp:348
+msgid "Failed to delete the spool"
+msgstr "Rolle konnte nicht gelöscht werden"
+
+#: mainwindow/MainWindow.cpp:371
+msgid "Failed to select spool"
+msgstr "Rolle konnte nicht ausgewählt werden"
+
+#: mainwindow/MainWindow.cpp:408
+msgid "Are you sure to delete the file?"
+msgstr "Soll die Datei wirklich gelöscht werden?"
+
+#: mainwindow/MainWindow.cpp:410 mainwindow/MainWindowBase.cpp:28
+#: mainwindow/MainWindowBase.cpp:64
+msgid "Delete file"
+msgstr "Datei löschen"
+
+#: mainwindow/MainWindow.cpp:410
+msgid "Keep file"
+msgstr "Datei behalten"
+
+#: mainwindow/MainWindow.cpp:455
+msgid "Are you sure to delete the folder?"
+msgstr "Soll der Ordner wirklich gelöscht werden?"
+
+#: mainwindow/MainWindow.cpp:457 mainwindow/MainWindowBase.cpp:30
+#: mainwindow/MainWindowBase.cpp:65
+msgid "Delete folder"
+msgstr "Ordner löschen"
+
+#: mainwindow/MainWindow.cpp:457
+msgid "Keep folder"
+msgstr "Ordner behalten"
+
+#: mainwindow/MainWindowBase.cpp:11 MainApp.cpp:35
+msgid "wxOcto"
+msgstr "wxOcto"
+
+#: mainwindow/MainWindowBase.cpp:22 mainwindow/MainWindowBase.cpp:58
+msgid "Printer settings"
+msgstr "Druckereinstellungen"
+
+#: mainwindow/MainWindowBase.cpp:35 mainwindow/MainWindowBase.cpp:67
+msgid "Start print"
+msgstr "Druck starten"
+
+#: mainwindow/MainWindowBase.cpp:37 mainwindow/MainWindowBase.cpp:68
+msgid "Resume print"
+msgstr "Druck fortsetzen"
+
+#: mainwindow/MainWindowBase.cpp:45 mainwindow/MainWindowBase.cpp:73
+#: spoolmanager/AddSpoolDialog.cpp:16
+msgid "Add spool"
+msgstr "Rolle hinzufügen"
+
+#: mainwindow/MainWindowBase.cpp:47 mainwindow/MainWindowBase.cpp:74
+#: spoolmanager/EditSpoolDialog.cpp:17
+msgid "Edit spool"
+msgstr "Rolle bearbeiten"
+
+#: mainwindow/MainWindowBase.cpp:60
+msgid "Exit"
+msgstr "Beenden"
+
+#: mainwindow/MainWindowBase.cpp:78
+msgid "Octoprint"
+msgstr "Octoprint"
+
+#: mainwindow/MainWindowBase.cpp:79 mainwindow/MainWindowBase.cpp:193
+msgid "Spools"
+msgstr "Filamentrollen"
+
+#: mainwindow/MainWindowBase.cpp:90
+msgid "Status"
+msgstr "Status"
+
+#: mainwindow/MainWindowBase.cpp:100
+msgid "Print progress"
+msgstr "Druckfortschritt"
+
+#: mainwindow/MainWindowBase.cpp:112
+msgid "Time elapsed"
+msgstr "Verstrichene Zeit"
+
+#: mainwindow/MainWindowBase.cpp:122
+msgid "Time left"
+msgstr "Verbleibende Zeit"
+
+#: mainwindow/MainWindowBase.cpp:132
+msgid "Finish time"
+msgstr "Fertig um"
+
+#: mainwindow/MainWindowBase.cpp:153
+msgid "Selected spool"
+msgstr "Ausgewählte Rolle"
+
+#: mainwindow/MainWindowBase.cpp:170
+msgid "Files"
+msgstr "Dateien"
+
+#: mainwindow/MainWindowBase.cpp:180 mainwindow/MainWindowBase.cpp:203
+msgid "Name"
+msgstr "Name"
+
+#: mainwindow/MainWindowBase.cpp:181
+msgid "Size"
+msgstr "Größe"
+
+#: mainwindow/MainWindowBase.cpp:182
+msgid "Uploaded"
+msgstr "Hochgeladen am"
+
+#: mainwindow/MainWindowBase.cpp:183
+msgid "Model size"
+msgstr "Modellgröße"
+
+#: mainwindow/MainWindowBase.cpp:184
+msgid "Filament use"
+msgstr "Filamentverbrauch"
+
+#: mainwindow/MainWindowBase.cpp:185
+msgid "Estimated print time"
+msgstr "Vorrausichtliche Druckdauer"
+
+#: mainwindow/MainWindowBase.cpp:187
+msgid "Full path"
+msgstr "Dateipfad"
+
+#: mainwindow/MainWindowBase.cpp:205 spoolmanager/SpoolDialogBase.cpp:19
+msgid "Material"
+msgstr "Material"
+
+#: mainwindow/MainWindowBase.cpp:207
+msgid "Last used"
+msgstr "Zuletzt benutzt"
+
+#: mainwindow/MainWindowBase.cpp:209
+msgid "Weight total (g)"
+msgstr "Gesamtgewicht (g)"
+
+#: mainwindow/MainWindowBase.cpp:211
+msgid "Weight used (g)"
+msgstr "Verbrauchtes Gewicht (g)"
+
+#: mainwindow/MainWindowBase.cpp:213
+msgid "Weight left (g)"
+msgstr "Verbleibendes Gewicht (g)"
+
+#: mainwindow/MainWindowBase.cpp:215
+msgid "Length total (mm)"
+msgstr "Gesamtlänge (mm)"
+
+#: mainwindow/MainWindowBase.cpp:217
+msgid "Length used (mm)"
+msgstr "Verbrauchte Länge (mm)"
+
+#: mainwindow/MainWindowBase.cpp:219
+msgid "Length left (mm)"
+msgstr "Verbleibende Länge (mm)"
+
+#: spoolmanager/AddSpoolDialog.cpp:27 spoolmanager/EditSpoolDialog.cpp:28
+msgid "Failed to save the spool"
+msgstr "Speichern der Rolle fehlgeschlagen"
+
+#: spoolmanager/SpoolDialogBase.cpp:12
+msgid "Filament information"
+msgstr "Filament Details"
+
+#: spoolmanager/SpoolDialogBase.cpp:15
+msgid "Display name"
+msgstr "Anzeigename"
+
+#: spoolmanager/SpoolDialogBase.cpp:16
+msgid "Color name"
+msgstr "Farbname"
+
+#: spoolmanager/SpoolDialogBase.cpp:17
+msgid "Color"
+msgstr "Farbe"
+
+#: spoolmanager/SpoolDialogBase.cpp:18
+msgid "Vendor"
+msgstr "Hersteller"
+
+#: spoolmanager/SpoolDialogBase.cpp:20
+msgid "Density (g/m³)"
+msgstr "Dichte (g/m³)"
+
+#: spoolmanager/SpoolDialogBase.cpp:21
+msgid "Diameter (mm)"
+msgstr "Durchmesser (mm)"
+
+#: spoolmanager/SpoolDialogBase.cpp:22
+msgid "Tolerance (mm)"
+msgstr "Toleranz (mm)"
+
+#: spoolmanager/SpoolDialogBase.cpp:67
+msgid "Weight and length information"
+msgstr "Gewicht und Länge"
+
+#: spoolmanager/SpoolDialogBase.cpp:69
+msgid "Tool temperature (°C)"
+msgstr "Druckkopf Temperatur (°C)"
+
+#: spoolmanager/SpoolDialogBase.cpp:70
+msgid "Bed temperature (°C)"
+msgstr "Bett Temperatur (°C)"
+
+#: spoolmanager/SpoolDialogBase.cpp:71
+msgid "Total weight (g)"
+msgstr "Gesamtgewicht (g)"
+
+#: spoolmanager/SpoolDialogBase.cpp:72
+msgid "Used weight (g)"
+msgstr "Verbrauchtes Gewicht (g)"
+
+#: spoolmanager/SpoolDialogBase.cpp:73
+msgid "Spool weight (g)"
+msgstr "Spulengewicht (g)"
+
+#: spoolmanager/SpoolDialogBase.cpp:74
+msgid "Total length (mm)"
+msgstr "Gesamtlänge (mm)"
+
+#: spoolmanager/SpoolDialogBase.cpp:75
+msgid "Used length (mm)"
+msgstr "Verbrauchte Länge (mm)"
+
+#: spoolmanager/SpoolDialogBase.cpp:125
+msgid "Purchase information"
+msgstr "Kaufdetails"
+
+#: spoolmanager/SpoolDialogBase.cpp:127
+msgid "Purchased from"
+msgstr "Gekauft von"
+
+#: spoolmanager/SpoolDialogBase.cpp:128
+msgid "Cost"
+msgstr "Preis"
+
+#: spoolmanager/SpoolDialogBase.cpp:129
+msgid "Purchased on"
+msgstr "Gekauft am"
+
+#: spoolmanager/SpoolDialogBase.cpp:160
+msgid "Save spool"
+msgstr "Rolle speichern"
+
+#: settings/OctoPrintServerSettingsPagePanel.cpp:10
+msgid "Octoprint server"
+msgstr "Octoprint Server"
+
+#: settings/OctoPrintServerSettingsPagePanel.cpp:14
+#: settings/OctoPrintServerSettingsPagePanel.cpp:16
+msgid "Octoprint api key"
+msgstr "Octoprint API Key"

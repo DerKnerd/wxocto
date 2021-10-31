@@ -10,7 +10,7 @@
 
 wxString OctoprintJob::getTimeElapsed() const {
     if (state != Printing && state != Paused && state != Pausing) {
-        return _("No print started").ToStdString();
+        return _("No print started");
     }
 
     auto ss = std::stringstream();
@@ -25,7 +25,7 @@ wxString OctoprintJob::getTimeElapsed() const {
 
 wxString OctoprintJob::getTimeLeft() const {
     if (timeLeft == 0) {
-        return _("No print started").ToStdString();
+        return _("No print started");
     }
 
     auto ss = std::stringstream();

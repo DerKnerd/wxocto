@@ -1,4 +1,3 @@
-aaaaaaaa ICON
-"wxocto.ico"
-wxocto ICON
-"wxocto.ico"
+aaaaaaaa    ICON    "wxocto.ico"
+wxocto      ICON    "wxocto.ico"
+wxocto_de   MOFILE  "de/wxocto.mo"

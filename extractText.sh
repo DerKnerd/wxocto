@@ -1,0 +1,1 @@
+xgettext -C -n -k_ -kwxPLURAL:1,2 -kwxTRANSLATE -o wxocto.po mainwindow/**.cpp spoolmanager/**.cpp MainApp.cpp main.cpp settings/**.cpp octoprint/**.cpp octoprint/spoolmanager/**.cpp

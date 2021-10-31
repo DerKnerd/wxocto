@@ -20,6 +20,20 @@ bool MainApp::OnInit() {
     if (!wxApp::OnInit())
         return false;
 
+    wxLocale::AddCatalogLookupPathPrefix(".");
+    wxLocale::AddCatalogLookupPathPrefix("..");
+    auto translation = wxTranslations::Get();
+    if (translation == nullptr) {
+        translation = new wxTranslations();
+        wxTranslations::Set(translation);
+    }
+
+    translation->AddStdCatalog();
+    translation->AddCatalog("wxocto");
+#ifdef __LINUX__
+    translation->AddCatalog("fileutils");
+#endif
+
     // Add the common image handlers
     wxInitAllImageHandlers();
     SetAppDisplayName(_("wxOcto"));
