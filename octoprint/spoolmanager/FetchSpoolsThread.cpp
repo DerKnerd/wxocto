@@ -37,10 +37,10 @@ void *FetchSpoolsThread::Entry() {
                 spoolData.spools.emplace_back(OctoprintSpool::fromJson(item));
             }
             for (const auto &item: materials) {
-                spoolData.materials.emplace_back(wxString::FromUTF8(item));
+                spoolData.materials.emplace_back(wxString::FromUTF8(item.get<std::string>().c_str()));
             }
             for (const auto &item: vendors) {
-                spoolData.vendors.emplace_back(wxString::FromUTF8(item));
+                spoolData.vendors.emplace_back(wxString::FromUTF8(item.get<std::string>().c_str()));
             }
 
             auto event = new wxThreadEvent();

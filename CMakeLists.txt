@@ -16,7 +16,7 @@ if (WIN32 OR MINGW)
 endif ()
 
 # Request the required wxWidgets libs
-find_package(wxWidgets 3.1 REQUIRED)
+find_package(wxWidgets 3.0 REQUIRED)
 
 # Include the wxWidgets use file to initialize various settings
 include(${wxWidgets_USE_FILE})

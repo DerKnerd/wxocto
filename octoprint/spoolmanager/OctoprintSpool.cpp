@@ -26,19 +26,19 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
         spool->version = json["version"];
     }
     if (json["displayName"].is_string()) {
-        spool->displayName = wxString::FromUTF8(json["displayName"]);
+        spool->displayName = wxString::FromUTF8(json["displayName"].get<std::string>().c_str());
     }
     if (json["colorName"].is_string()) {
-        spool->colorName = wxString::FromUTF8(json["colorName"]);
+        spool->colorName = wxString::FromUTF8(json["colorName"].get<std::string>().c_str());
     }
     if (json["color"].is_string()) {
-        spool->color = wxString::FromUTF8(json["color"]);
+        spool->color = wxString::FromUTF8(json["color"].get<std::string>().c_str());
     }
     if (json["vendor"].is_string()) {
-        spool->vendor = wxString::FromUTF8(json["vendor"]);
+        spool->vendor = wxString::FromUTF8(json["vendor"].get<std::string>().c_str());
     }
     if (json["material"].is_string()) {
-        spool->material = wxString::FromUTF8(json["material"]);
+        spool->material = wxString::FromUTF8(json["material"].get<std::string>().c_str());
     }
     if (json["density"].is_number()) {
         spool->density = json["density"];
@@ -53,16 +53,16 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
         spool->temperatureTool = json["temperature"];
     }
     if (json["totalWeight"].is_string()) {
-        spool->totalWeight = wxString::FromUTF8(json["totalWeight"]);
+        spool->totalWeight = wxString::FromUTF8(json["totalWeight"].get<std::string>().c_str());
     }
     if (json["usedWeight"].is_string()) {
-        spool->usedWeight = wxString::FromUTF8(json["usedWeight"]);
+        spool->usedWeight = wxString::FromUTF8(json["usedWeight"].get<std::string>().c_str());
     }
     if (json["spoolWeight"].is_string()) {
-        spool->spoolWeight = wxString::FromUTF8(json["spoolWeight"]);
+        spool->spoolWeight = wxString::FromUTF8(json["spoolWeight"].get<std::string>().c_str());
     }
     if (json["remainingWeight"].is_string()) {
-        spool->leftWeight = wxString::FromUTF8(json["remainingWeight"]);
+        spool->leftWeight = wxString::FromUTF8(json["remainingWeight"].get<std::string>().c_str());
     }
     if (json["totalLength"].is_number()) {
         spool->totalLength = json["totalLength"];
@@ -77,7 +77,7 @@ OctoprintSpool *OctoprintSpool::fromJson(const nlohmann::json &json) {
         spool->leftLength = std::stod(json["remainingLength"].get<std::string>());
     }
     if (json["purchasedFrom"].is_string()) {
-        spool->purchasedFrom = wxString::FromUTF8(json["purchasedFrom"]);
+        spool->purchasedFrom = wxString::FromUTF8(json["purchasedFrom"].get<std::string>().c_str());
     }
     if (json["purchasedOn"].is_string()) {
         std::string purchasedOn = json["purchasedOn"];

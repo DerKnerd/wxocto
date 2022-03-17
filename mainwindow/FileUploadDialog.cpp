@@ -5,10 +5,11 @@
 #include "FileUploadDialog.h"
 #include "../octoprint/UploadFileThread.h"
 #include "../octoprint/OctoApiEventIds.h"
+#include "../helper.h"
 
 FileUploadDialog::FileUploadDialog(wxWindow *parent)
         : wxDialog(parent, wxID_ANY, _("Upload file"), wxDefaultPosition, wxSize(-1, -1), wxDEFAULT_DIALOG_STYLE,
-                   wxASCII_STR(wxDialogNameStr)) {
+                   wxDialogNameStr) {
     auto dialogSizer = new wxBoxSizer(wxVERTICAL);
     auto itemsSizer = new wxFlexGridSizer(2);
     itemsSizer->SetFlexibleDirection(wxHORIZONTAL);
@@ -22,11 +23,11 @@ FileUploadDialog::FileUploadDialog(wxWindow *parent)
     file = new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString, _("Select a file"),
                                 _("GCODE (*.gco;*.gcode)") + "|*.gco;*.gcode");
 
-    itemsSizer->Add(folderLabel, 0, wxALL, FromDIP(5));
-    itemsSizer->Add(folder, 0, wxALL, FromDIP(5));
+    itemsSizer->Add(folderLabel, 0, wxALL, WXC_FROM_DIP(5));
+    itemsSizer->Add(folder, 0, wxALL, WXC_FROM_DIP(5));
 
-    itemsSizer->Add(fileLabel, 0, wxALL, FromDIP(5));
-    itemsSizer->Add(file, 0, wxALL | wxEXPAND, FromDIP(5));
+    itemsSizer->Add(fileLabel, 0, wxALL, WXC_FROM_DIP(5));
+    itemsSizer->Add(file, 0, wxALL | wxEXPAND, WXC_FROM_DIP(5));
 
     dialogSizer->Add(itemsSizer);
 

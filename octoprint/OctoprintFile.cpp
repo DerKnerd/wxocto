@@ -13,10 +13,10 @@ OctoprintFile OctoprintFile::fromJson(const nlohmann::json &json) {
     } else {
         file.uploaded = 0;
     }
-    file.path = wxString::FromUTF8(json["path"]);
-    file.name = wxString::FromUTF8(json["display"]);
+    file.path = wxString::FromUTF8(json["path"].get<std::string>().c_str());
+    file.name = wxString::FromUTF8(json["display"].get<std::string>().c_str());
     file.size = json["size"];
-    file.origin = wxString::FromUTF8(json["origin"]);
+    file.origin = wxString::FromUTF8(json["origin"].get<std::string>().c_str());
     if (json.contains("gcodeAnalysis")) {
         auto gcodeAnalysis = json["gcodeAnalysis"];
         if (gcodeAnalysis.contains("estimatedPrintTime")) {

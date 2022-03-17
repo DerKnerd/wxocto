@@ -380,7 +380,7 @@ void MainWindow::checkIfFileIsDeletable() {
     if (treeListItem.IsOk()) {
         auto item = dynamic_cast<OctoprintFileClientData *>(tlcFiles->GetItemData(treeListItem));
         auto canDeleteFile = item->file.path != currentJob.path && item->file.type == OctoprintFile::File;
-        auto canDeleteFolder = !currentJob.path.starts_with(item->file.path) && item->file.type == OctoprintFile::Folder && item->file.children.empty();
+        auto canDeleteFolder = !currentJob.path.StartsWith(item->file.path) && item->file.type == OctoprintFile::Folder && item->file.children.empty();
 
         toolbar->EnableTool(DeleteFile, canDeleteFile);
         octoprintMenu->Enable(DeleteFile, canDeleteFile);

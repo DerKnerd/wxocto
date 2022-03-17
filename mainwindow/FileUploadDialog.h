@@ -14,6 +14,7 @@
 #endif
 
 #include <wx/filepicker.h>
+#include <vector>
 
 class FileUploadDialog : public wxDialog {
 public:

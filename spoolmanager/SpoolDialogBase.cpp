@@ -3,10 +3,11 @@
 //
 
 #include "SpoolDialogBase.h"
+#include "../helper.h"
 
 SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int winid)
         : wxDialog(parent, winid, title, wxDefaultPosition, wxSize(-1, -1), wxDEFAULT_DIALOG_STYLE,
-                   wxASCII_STR(wxDialogNameStr)) {
+                   wxDialogNameStr) {
     auto dialogSizer = new wxBoxSizer(wxVERTICAL);
     auto staticBoxesSizer = new wxBoxSizer(wxHORIZONTAL);
     auto filamentInformationSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Filament information")),
@@ -37,31 +38,31 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     diameter->SetRange(0, 500000000);
     tolerance->SetRange(0, 500000000);
 
-    filamentInformationContentSizer->Add(displayNameLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(displayName, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(displayNameLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(displayName, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(colorNameLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(colorName, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(colorNameLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(colorName, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(colorPickerLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(colorPicker, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(colorPickerLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(colorPicker, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(vendorLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(vendor, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(vendorLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(vendor, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(materialLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(material, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(materialLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(material, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(densityLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(density, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(densityLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(density, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(diameterLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(diameter, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(diameterLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(diameter, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationContentSizer->Add(toleranceLabel, 0, wxALL, FromDIP(5));
-    filamentInformationContentSizer->Add(tolerance, 0, wxALL, FromDIP(5));
+    filamentInformationContentSizer->Add(toleranceLabel, 0, wxALL, WXC_FROM_DIP(5));
+    filamentInformationContentSizer->Add(tolerance, 0, wxALL, WXC_FROM_DIP(5));
 
-    filamentInformationSizer->Add(filamentInformationContentSizer, 0, wxALL, FromDIP(5));
+    filamentInformationSizer->Add(filamentInformationContentSizer, 0, wxALL, WXC_FROM_DIP(5));
 
     auto weightAndLengthInformationSizer = new wxStaticBoxSizer(
             new wxStaticBox(this, wxID_ANY, _("Weight and length information")), wxVERTICAL);
@@ -98,28 +99,28 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     totalLength->SetRange(0, 500000000);
     usedLength->SetRange(0, 500000000);
 
-    weightAndLengthInformationContentSizer->Add(temperatureToolLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(temperatureTool, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(temperatureToolLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(temperatureTool, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(temperatureBedLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(temperatureBed, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(temperatureBedLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(temperatureBed, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(totalWeightLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(totalWeight, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(totalWeightLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(totalWeight, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(usedWeightLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(usedWeight, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(usedWeightLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(usedWeight, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(spoolWeightLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(spoolWeight, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(spoolWeightLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(spoolWeight, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(totalLengthLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(totalLength, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(totalLengthLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(totalLength, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationContentSizer->Add(usedLengthLabel, 0, wxALL, FromDIP(5));
-    weightAndLengthInformationContentSizer->Add(usedLength, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationContentSizer->Add(usedLengthLabel, 0, wxALL, WXC_FROM_DIP(5));
+    weightAndLengthInformationContentSizer->Add(usedLength, 0, wxALL, WXC_FROM_DIP(5));
 
-    weightAndLengthInformationSizer->Add(weightAndLengthInformationContentSizer, 0, wxALL, FromDIP(5));
+    weightAndLengthInformationSizer->Add(weightAndLengthInformationContentSizer, 0, wxALL, WXC_FROM_DIP(5));
 
     auto purchaseInformationSizer = new wxStaticBoxSizer(
             new wxStaticBox(this, wxID_ANY, _("Purchase information")), wxVERTICAL);
@@ -135,20 +136,20 @@ SpoolDialogBase::SpoolDialogBase(wxWindow *parent, const wxString &title, int wi
     cost->SetDigits(2);
     cost->SetRange(0, 500000000);
 
-    purchaseInformationContentSizer->Add(purchasedFromLabel, 0, wxALL, FromDIP(5));
-    purchaseInformationContentSizer->Add(purchasedFrom, 0, wxALL, FromDIP(5));
+    purchaseInformationContentSizer->Add(purchasedFromLabel, 0, wxALL, WXC_FROM_DIP(5));
+    purchaseInformationContentSizer->Add(purchasedFrom, 0, wxALL, WXC_FROM_DIP(5));
 
-    purchaseInformationContentSizer->Add(costLabel, 0, wxALL, FromDIP(5));
-    purchaseInformationContentSizer->Add(cost, 0, wxALL, FromDIP(5));
+    purchaseInformationContentSizer->Add(costLabel, 0, wxALL, WXC_FROM_DIP(5));
+    purchaseInformationContentSizer->Add(cost, 0, wxALL, WXC_FROM_DIP(5));
 
-    purchaseInformationContentSizer->Add(purchasedOnLabel, 0, wxALL, FromDIP(5));
-    purchaseInformationContentSizer->Add(purchasedOn, 0, wxALL, FromDIP(5));
+    purchaseInformationContentSizer->Add(purchasedOnLabel, 0, wxALL, WXC_FROM_DIP(5));
+    purchaseInformationContentSizer->Add(purchasedOn, 0, wxALL, WXC_FROM_DIP(5));
 
-    purchaseInformationSizer->Add(purchaseInformationContentSizer, 0, wxALL, FromDIP(5));
+    purchaseInformationSizer->Add(purchaseInformationContentSizer, 0, wxALL, WXC_FROM_DIP(5));
 
-    staticBoxesSizer->Add(filamentInformationSizer, 0, wxALL, FromDIP(5));
-    staticBoxesSizer->Add(weightAndLengthInformationSizer, 0, wxALL, FromDIP(5));
-    staticBoxesSizer->Add(purchaseInformationSizer, 0, wxALL, FromDIP(5));
+    staticBoxesSizer->Add(filamentInformationSizer, 0, wxALL, WXC_FROM_DIP(5));
+    staticBoxesSizer->Add(weightAndLengthInformationSizer, 0, wxALL, WXC_FROM_DIP(5));
+    staticBoxesSizer->Add(purchaseInformationSizer, 0, wxALL, WXC_FROM_DIP(5));
 
     dialogSizer->Add(staticBoxesSizer);
 
@@ -219,9 +220,13 @@ OctoprintSpool SpoolDialogBase::getSpool() const {
 }
 
 void SpoolDialogBase::setVendors(const std::vector<wxString> &vendors) {
-    vendor->Append(vendors);
+    for (const auto &item: vendors) {
+        vendor->Append(item);
+    }
 }
 
 void SpoolDialogBase::setMaterials(const std::vector<wxString> &materials) {
-    material->Append(materials);
+    for (const auto &item: materials) {
+        material->Append(item);
+    }
 }

@@ -72,18 +72,18 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
                 job.file = _("No file selected");
                 job.fileSelected = false;
             } else {
-                job.file = wxString::FromUTF8(jsonFile["name"]);
+                job.file = wxString::FromUTF8(jsonFile["name"].get<std::string>().c_str());
                 job.fileSelected = true;
             }
             if (jsonFile["path"].is_null()) {
                 job.path = "";
             } else {
-                job.path = wxString::FromUTF8(jsonFile["path"]);
+                job.path = wxString::FromUTF8(jsonFile["path"].get<std::string>().c_str());
             }
             if (jsonFile["origin"].is_null()) {
                 job.origin = "";
             } else {
-                job.origin = wxString::FromUTF8(jsonFile["origin"]);
+                job.origin = wxString::FromUTF8(jsonFile["origin"].get<std::string>().c_str());
             }
         }
         job.filamentLength = 0;
@@ -123,7 +123,7 @@ OctoprintJob OctoprintJob::fromJson(const nlohmann::json &json) {
         job.printProgress = 0;
     }
 
-    auto state = wxString::FromUTF8(json["state"].get<std::string>());
+    auto state = wxString::FromUTF8(json["state"].get<std::string>().c_str());
     if (state == "Operational") {
         job.state = OctoprintJobState::Operational;
     } else if (state == "Printing") {

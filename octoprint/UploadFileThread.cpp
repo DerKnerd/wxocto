@@ -18,14 +18,14 @@ UploadFileThread::UploadFileThread(wxWindow *parent, const wxString &parentFolde
 
 void *UploadFileThread::Entry() {
     auto file = std::ifstream();
-    file.open(localFilePath.utf8_string());
+    file.open(localFilePath.utf8_str());
     auto content = std::string();
     file >> content;
 
     auto os = std::stringstream();
-    auto filename = std::filesystem::path(localFilePath.utf8_string()).filename();
+    auto filename = std::filesystem::path(localFilePath.utf8_str().data()).filename();
     httplib::MultipartFormDataItems data = {
-            {"path", parentFolder.utf8_string()},
+            {"path", parentFolder.utf8_str().data()},
             {"file", content, filename.string(), "application/octet-stream"},
     };
 
