@@ -41,7 +41,6 @@ conan_add_remote(NAME conan.imanuel.dev
 conan_cmake_configure(
         REQUIRES
         nlohmann_json/3.10.2
-        expat/2.4.1
         cpp-httplib/0.9.7
         GENERATORS cmake_find_package
 )
@@ -64,11 +63,10 @@ else ()
 endif ()
 conan_cmake_autodetect(settings)
 
-find_package(expat)
 find_package(nlohmann_json)
 find_package(httplib)
 
 file(GLOB SOURCES mainwindow/*.cpp octoprint/*.cpp octoprint/spoolmanager/*.cpp spoolmanager/*.cpp settings/*.cpp)
 
 add_executable(wxocto ${target} main.rc main.cpp MainApp.h MainApp.cpp ${SOURCES})
-target_link_libraries(wxocto PRIVATE wx::base wx::core wx::net httplib::httplib expat::expat nlohmann_json::nlohmann_json ${wxWidgets_LIBRARIES})
+target_link_libraries(wxocto PRIVATE wx::base wx::core wx::net httplib::httplib nlohmann_json::nlohmann_json)

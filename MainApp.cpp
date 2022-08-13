@@ -26,7 +26,7 @@ bool MainApp::OnInit() {
         wxTranslations::Set(translation);
     }
 
-#if WIN32
+#ifdef WIN32
     auto loader = new wxResourceTranslationsLoader();
     translation->SetLoader(loader);
 #else
