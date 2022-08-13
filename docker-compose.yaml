@@ -1,0 +1,14 @@
+version: "3"
+services:
+  builder-mingw-ubuntu:
+    build:
+      dockerfile: building/docker/Dockerfile.ubuntu.mingw
+    volumes:
+      - .:/wxocto
+      - ./out/mingw/ubuntu:/out
+  builder-ubuntu:
+    build:
+      dockerfile: building/docker/Dockerfile.ubuntu
+    volumes:
+      - .:/wxocto
+      - ./out/ubuntu:/out
